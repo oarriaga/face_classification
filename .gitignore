@@ -1,1 +1,5 @@
-datasets/fer2013/fer2013.csv
+datasets/
+src/__pycache__
+gender/__pycache__
+src/trained_models/*
+trained_models

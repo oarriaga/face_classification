@@ -5,7 +5,8 @@ from statistics import mode
 from utils import preprocess_input
 
 detection_model_path = '../trained_models/haarcascade_frontalface_default.xml'
-classification_model_path = '../trained_models/simple_CNN.hdf5'
+#classification_model_path = '../trained_models/simple_CNN.hdf5'
+classification_model_path = '../trained_models/emotion_classifier_v2.hdf5'
 frame_window = 10
 emotion_labels = {0:'angry',1:'disgust',2:'sad',3:'happy',
                     4:'sad',5:'surprise',6:'neutral'}
@@ -21,6 +22,7 @@ while True:
     _, frame = video_capture.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_detection.detectMultiScale(gray,1.3,5)
+    print(len(faces))
     for (x,y,w,h) in faces:
         cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
         face = gray[y:y+h,x:x+w]
