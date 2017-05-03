@@ -161,16 +161,19 @@ class ImageGenerator(object):
                     image_path = self.path_prefix + key
                     image_array = imread(image_path)
                     image_array = imresize(image_array, self.image_size)
+
                     num_image_channels = len(image_array.shape)
                     if num_image_channels != 3:
                         continue
+
+                    ground_truth = self.ground_truth_data[key]
+                    #if np.isnan(ground_truth):
+                        #continue
+
                     if self.do_crop:
                         image_array = self.random_crop(image_array)
                     image_array = image_array.astype('float32')
                     #ground_truth = self.ground_truth_data[key].copy()
-                    ground_truth = self.ground_truth_data[key]
-                    if np.isnan(ground_truth):
-                        continue
                     if mode == 'train' or mode == 'demo':
                         if self.ground_truth_transformer != None:
                             image_array, ground_truth = self.transform(

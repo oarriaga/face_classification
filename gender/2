@@ -17,11 +17,11 @@ def display_image_fer(image, one_hot_encoder=None, labels=None):
     return None
 
 def get_labels(dataset_name):
-    if dataset_name == 'fer2013':
-        return {0:'angry',1:'disgust',2:'sad',3:'happy',
+    if dataset_name == 'imdb'
+    return {0:'angry',1:'disgust',2:'sad',3:'happy',
                     4:'sad',5:'surprise',6:'neutral'}
-    elif dataset_name == 'imdb':
-        return {0:'woman', 1:'men'}
+    elif dataset_name == 'fer2013':
+        return {0:'man', 1:'woman'}
     else:
         raise Exception('Invalid dataset name')
 
