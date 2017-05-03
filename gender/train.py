@@ -7,8 +7,8 @@ from utils import split_data
 batch_size = 32
 num_classes = 2
 num_epochs = 10
-input_shape = (50, 50, 3)
-trained_models_path = '../trained_models/attention_weights'
+input_shape = (48, 48, 3)
+trained_models_path = '../trained_models/gender_models/'
 
 data_loader = DataLoader('imdb')
 ground_truth_data = data_loader.load_dataset()
@@ -16,6 +16,7 @@ train_keys, val_keys = split_data(ground_truth_data, training_ratio=.8)
 image_generator = ImageGenerator(ground_truth_data, batch_size, input_shape[:2],
                                 train_keys, val_keys, None,
                                 path_prefix='../datasets/imdb_crop/',
+                                vertical_flip_probability=0,
                                 do_crop=True)
 
 model = attention_CNN(input_shape, num_classes)

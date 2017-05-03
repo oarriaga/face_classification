@@ -5,7 +5,7 @@ from utils import split_data
 
 batch_size = 100
 num_classes = 2
-input_shape = (50, 50, 3)
+input_shape = (100, 100, 3)
 
 data_loader = DataLoader('imdb')
 ground_truth_data = data_loader.load_dataset()

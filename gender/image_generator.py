@@ -76,6 +76,30 @@ class ImageGenerator(object):
         image_array = np.rollaxis(image_array, 0, 3)
         return image_array
 
+    def random_rotation(self, image_array):
+        """IMPORTANT: random rotation only works for classification since the
+        current implementation does no transform bounding boxes"""
+        height = image_array.shape[0]
+        width = image_array.shape[1]
+        x_offset = np.random.uniform(0, self.translation_factor * width)
+        y_offset = np.random.uniform(0, self.translation_factor * height)
+        offset = np.array([x_offset, y_offset])
+        scale_factor = np.random.uniform(self.zoom_range[0],
+                                        self.zoom_range[1])
+        crop_matrix = np.array([[scale_factor, 0],
+                                [0, scale_factor]])
+
+        image_array = np.rollaxis(image_array, axis=-1, start=0)
+        image_channel = [ndi.interpolation.affine_transform(image_channel,
+                        crop_matrix, offset=offset, order=0, mode='nearest',
+                        cval=0.0) for image_channel in image_array]
+
+        image_array = np.stack(image_channel, axis=0)
+        image_array = np.rollaxis(image_array, 0, 3)
+        return image_array
+
+
+
     def _gray_scale(self, image_array):
         return image_array.dot([0.299, 0.587, 0.114])
 

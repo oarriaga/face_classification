@@ -1,7 +1,7 @@
 from keras.layers import Activation, Convolution2D, Dropout, Dense, Flatten
 from keras.layers import AveragePooling2D, BatchNormalization, MaxPooling2D
 from keras.models import Sequential
-from spatial_transformer import SpatialTransformer
+from layers import SpatialTransformer
 import numpy as np
 
 def simple_CNN(input_shape, num_classes):
@@ -46,9 +46,11 @@ def attention_CNN(input_shape, num_classes):
 
     locnet = Sequential()
     locnet.add(MaxPooling2D(pool_size=(2,2), input_shape=input_shape))
-    locnet.add(Convolution2D(20, (5, 5)))
+    locnet.add(Convolution2D(16, (7, 7)))
     locnet.add(MaxPooling2D(pool_size=(2,2)))
-    locnet.add(Convolution2D(20, (5, 5)))
+    locnet.add(Convolution2D(32, (5, 5)))
+    locnet.add(MaxPooling2D(pool_size=(2,2)))
+    locnet.add(Convolution2D(32, (3, 3)))
     locnet.add(Flatten())
     locnet.add(Dense(50))
     locnet.add(Activation('relu'))
@@ -56,7 +58,7 @@ def attention_CNN(input_shape, num_classes):
 
     model = Sequential()
     model.add(SpatialTransformer(localization_net=locnet,
-                                 output_size=(30,30),
+                                 output_size=(42,42),
                                  input_shape=input_shape,
                                  name='image_array'))
     model.add(Convolution2D(filters=16, kernel_size=(7, 7), padding='same',
