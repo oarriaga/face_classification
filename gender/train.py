@@ -1,12 +1,12 @@
 from keras.callbacks import CSVLogger, ModelCheckpoint
 from data_loader import DataLoader
-from models import attention_CNN
+from models import simple_CNN
 from image_generator import ImageGenerator
 from utils import split_data
 
 batch_size = 32
 num_classes = 2
-num_epochs = 10
+num_epochs = 30
 input_shape = (48, 48, 3)
 trained_models_path = '../trained_models/gender_models/'
 
@@ -19,10 +19,11 @@ image_generator = ImageGenerator(ground_truth_data, batch_size, input_shape[:2],
                                 vertical_flip_probability=0,
                                 do_crop=True)
 
-model = attention_CNN(input_shape, num_classes)
+model = simple_CNN(input_shape, num_classes)
 model.compile(optimizer='adam',
             loss='categorical_crossentropy',
             metrics=['accuracy'])
+print(model.summary())
 
 model_names = trained_models_path + '.{epoch:02d}-{val_loss:.2f}.hdf5'
 model_checkpoint = ModelCheckpoint(model_names,

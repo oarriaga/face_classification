@@ -39,7 +39,6 @@ class DataLoader(object):
         mask = np.logical_and(mask, unknown_gender_mask)
         image_names_array = image_names_array[mask]
         gender_classes = gender_classes[mask].tolist()
-        print(len(gender_classes))
         image_names = []
         for image_name_arg in range(image_names_array.shape[0]):
             image_name = image_names_array[image_name_arg][0]
