@@ -8,26 +8,29 @@ batch_size = 32
 num_classes = 2
 num_epochs = 10
 input_shape = (50, 50, 3)
-data_loader = DataLoader()
-ground_truth_data = data_loader.load_dataset(dataset_name='imdb')
+trained_models_path = '../trained_models/attention_weights'
+
+data_loader = DataLoader('imdb')
+ground_truth_data = data_loader.load_dataset()
 train_keys, val_keys = split_data(ground_truth_data, training_ratio=.8)
 image_generator = ImageGenerator(ground_truth_data, batch_size, input_shape[:2],
-                                train_keys, val_keys,
-                                path_prefix='../datasets/imdb_crop/'  )
-demo_generator = image_generator.flow(mode='demo')
-values = next(demo_generator)
-model = attention_CNN(input_shape, num_classes)
-model.compile(optimizer='adam', loss='categorical_crossentropy',
-                                        metrics=['accuracy'])
+                                train_keys, val_keys, None,
+                                path_prefix='../datasets/imdb_crop/',
+                                do_crop=True)
 
-model_names = ('../trained_models/attention_weights.{epoch:02d}-{val_loss:.2f}.hdf5')
+model = attention_CNN(input_shape, num_classes)
+model.compile(optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy'])
+
+model_names = trained_models_path + '.{epoch:02d}-{val_loss:.2f}.hdf5'
 model_checkpoint = ModelCheckpoint(model_names,
                                    monitor='val_loss',
                                    verbose=1,
                                    save_best_only=False,
-                                   save_weights_only=True)
+                                   save_weights_only=False)
 
-csv_logger = CSVLogger('training_attention.log')
+csv_logger = CSVLogger('training.log')
 model.fit_generator(image_generator.flow(mode='train'),
                     steps_per_epoch=int(len(train_keys)/batch_size),
                     epochs=num_epochs, verbose=1,

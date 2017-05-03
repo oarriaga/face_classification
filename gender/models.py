@@ -57,7 +57,8 @@ def attention_CNN(input_shape, num_classes):
     model = Sequential()
     model.add(SpatialTransformer(localization_net=locnet,
                                  output_size=(30,30),
-                                 input_shape=input_shape))
+                                 input_shape=input_shape,
+                                 name='image_array'))
     model.add(Convolution2D(filters=16, kernel_size=(7, 7), padding='same',
                                                 input_shape=input_shape))
     model.add(Activation('relu'))
@@ -85,6 +86,6 @@ def attention_CNN(input_shape, num_classes):
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(num_classes))
-    model.add(Activation('softmax'))
+    model.add(Activation('softmax', name='predictions'))
     return model
 

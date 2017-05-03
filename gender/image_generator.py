@@ -26,7 +26,7 @@ class ImageGenerator(object):
                 lighting_std=0.5,
                 horizontal_flip_probability=0.5,
                 vertical_flip_probability=0.5,
-                do_crop=True,
+                do_crop=False,
                 zoom_range=[0.5, 1.5],
                 translation_factor=.3):
 
@@ -161,11 +161,11 @@ class ImageGenerator(object):
                     image_path = self.path_prefix + key
                     image_array = imread(image_path)
                     image_array = imresize(image_array, self.image_size)
-                    if self.do_crop:
-                        image_array = self.random_crop(image_array)
                     num_image_channels = len(image_array.shape)
                     if num_image_channels != 3:
                         continue
+                    if self.do_crop:
+                        image_array = self.random_crop(image_array)
                     image_array = image_array.astype('float32')
                     #ground_truth = self.ground_truth_data[key].copy()
                     ground_truth = self.ground_truth_data[key]

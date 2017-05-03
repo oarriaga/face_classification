@@ -19,7 +19,6 @@ def display_image_fer(image, one_hot_encoder=None, labels=None):
 def preprocess_input(images):
     """ preprocess input image to the CNN
     # Arguments: images or image of any shape
-    # Returns: images or image with substracted train mean (129)
     """
     images = images/255.0
     return images

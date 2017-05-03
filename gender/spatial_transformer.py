@@ -126,7 +126,7 @@ class SpatialTransformer(Layer):
         x_coordinates = tf.reshape(x_coordinates, [-1])
         y_coordinates = tf.reshape(y_coordinates, [-1])
         ones = tf.ones_like(x_coordinates)
-        indices_grid = tf.concat([x_coordinates, y_coordinates, ones], 0)
+        indices_grid = tf.concat_v2([x_coordinates, y_coordinates, ones], 0)
         return indices_grid
 
     def _transform(self, affine_transformation, input_shape, output_size):
