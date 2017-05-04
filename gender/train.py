@@ -8,7 +8,7 @@ batch_size = 32
 num_classes = 2
 num_epochs = 30
 input_shape = (48, 48, 3)
-trained_models_path = '../trained_models/gender_models/'
+trained_models_path = '../trained_models/gender_models/simple_CNN'
 
 data_loader = DataLoader('imdb')
 ground_truth_data = data_loader.load_dataset()
@@ -25,7 +25,7 @@ model.compile(optimizer='adam',
             metrics=['accuracy'])
 print(model.summary())
 
-model_names = trained_models_path + '.{epoch:02d}-{val_loss:.2f}.hdf5'
+model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
 model_checkpoint = ModelCheckpoint(model_names,
                                    monitor='val_loss',
                                    verbose=1,
