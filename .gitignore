@@ -1,5 +1,3 @@
 datasets/
 src/__pycache__
-gender/__pycache__
-src/trained_models/*
 trained_models
