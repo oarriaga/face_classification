@@ -1,7 +1,7 @@
-keras 1.1.1
-tensorflow 0.12.0
+keras 2.0.3
+tensorflow 1.1.0
 pandas 0.19.1
-numpy 1.11.2
+numpy 1.12.1
 
 #optional for video_test.py
-cv2 3.1.0
+cv2 3.2.0
