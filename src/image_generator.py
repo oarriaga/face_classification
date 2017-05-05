@@ -26,8 +26,8 @@ class ImageGenerator(object):
                 lighting_std=0.5,
                 horizontal_flip_probability=0.5,
                 vertical_flip_probability=0.5,
-                do_crop=False,
-                zoom_range=[0.5, 1.5],
+                do_random_crop=False,
+                zoom_range=[0.75, 1.25],
                 translation_factor=.3):
 
         self.ground_truth_data = ground_truth_data
@@ -50,11 +50,11 @@ class ImageGenerator(object):
         self.lighting_std = lighting_std
         self.horizontal_flip_probability = horizontal_flip_probability
         self.vertical_flip_probability = vertical_flip_probability
-        self.do_crop = do_crop
+        self.do_random_crop = do_random_crop
         self.zoom_range = zoom_range
         self.translation_factor = translation_factor
 
-    def random_crop(self, image_array):
+    def _do_random_crop(self, image_array):
         """IMPORTANT: random crop only works for classification since the
         current implementation does no transform bounding boxes"""
         height = image_array.shape[0]
@@ -76,7 +76,7 @@ class ImageGenerator(object):
         image_array = np.rollaxis(image_array, 0, 3)
         return image_array
 
-    def random_rotation(self, image_array):
+    def do_random_rotation(self, image_array):
         """IMPORTANT: random rotation only works for classification since the
         current implementation does no transform bounding boxes"""
         height = image_array.shape[0]
@@ -191,13 +191,11 @@ class ImageGenerator(object):
                         continue
 
                     ground_truth = self.ground_truth_data[key]
-                    #if np.isnan(ground_truth):
-                        #continue
 
-                    if self.do_crop:
-                        image_array = self.random_crop(image_array)
+                    if self.do_random_crop:
+                        image_array = self._do_random_crop(image_array)
+
                     image_array = image_array.astype('float32')
-                    #ground_truth = self.ground_truth_data[key].copy()
                     if mode == 'train' or mode == 'demo':
                         if self.ground_truth_transformer != None:
                             image_array, ground_truth = self.transform(

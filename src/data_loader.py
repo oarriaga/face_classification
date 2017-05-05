@@ -18,7 +18,7 @@ class DataLoader(object):
         else:
             raise Exception('Incorrect dataset name, please input imdb or fer2013')
 
-    def load_dataset(self):
+    def get_data(self):
         if self.dataset_name == 'imdb':
             ground_truth_data = self._load_imdb()
         elif self.dataset_name == 'fer2013':
