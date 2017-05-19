@@ -11,8 +11,8 @@ from models import simple_CNN
 from utils import preprocess_input
 
 # parameters
-batch_size = 32
-num_epochs = 100
+batch_size = 128
+num_epochs = 1000
 training_split = .8
 dataset_name = 'fer2013'
 log_file_path = 'log_files/emotion_training.log'
@@ -38,9 +38,10 @@ model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
 model_checkpoint = ModelCheckpoint(model_names,
                             'val_acc', verbose=1,
                                 save_best_only=True)
+callbacks = [model_checkpoint, csv_logger]
 
 # model training
 model.fit(faces, emotions, batch_size, num_epochs,verbose=1,
-                    callbacks=[model_checkpoint, csv_logger],
+                                        callbacks=callbacks,
                         validation_split=(1-training_split),
                                                 shuffle=True)
