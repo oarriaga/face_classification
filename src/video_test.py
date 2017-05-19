@@ -24,7 +24,6 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     faces = face_detection.detectMultiScale(gray, 1.3, 5)
-    print(len(faces))
     for (x,y,w,h) in faces:
         cv2.rectangle(frame, (x - x_offset, y - y_offset),
                     (x + w + x_offset, y + h + y_offset),
