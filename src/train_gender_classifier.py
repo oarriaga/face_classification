@@ -8,13 +8,13 @@ Description: Train gender classification model
 
 from keras.callbacks import CSVLogger, ModelCheckpoint
 from data_loader import DataLoader
-from models import attention_CNN
+from models import simple_CNN
 from image_generator import ImageGenerator
 from utils import split_data
 
 # parameters
 batch_size = 32
-num_epochs = 100
+num_epochs = 1000
 training_split = .8
 do_random_crop = False
 num_classes = 2
@@ -22,7 +22,7 @@ dataset_name = 'imdb'
 input_shape = (48, 48, 3)
 images_path = '../datasets/imdb_crop/'
 log_file_path = 'log_files/gender_training.log'
-trained_models_path = '../trained_models/gender_models/attention_CNN'
+trained_models_path = '../trained_models/gender_models/simple_CNN'
 
 # data loader
 data_loader = DataLoader(dataset_name)
@@ -36,7 +36,7 @@ image_generator = ImageGenerator(ground_truth_data, batch_size,
                                 do_random_crop=do_random_crop)
 
 # model parameters/compilation
-model = attention_CNN(input_shape, num_classes)
+model = simple_CNN(input_shape, num_classes)
 model.compile(optimizer='adam',
             loss='categorical_crossentropy',
             metrics=['accuracy'])
