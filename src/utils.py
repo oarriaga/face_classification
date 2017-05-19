@@ -43,3 +43,4 @@ def to_categorical(integer_classes, num_classes=2):
     categorical = np.zeros((num_samples, num_classes))
     categorical[np.arange(num_samples), integer_classes] = 1
     return categorical
+
