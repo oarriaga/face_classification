@@ -6,7 +6,7 @@ from utils import preprocess_input
 from utils import get_labels
 
 # parameters
-image_path = '../images/robocup_team.jpg'
+image_path = '../images/test_image.jpg'
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/simple_CNN.530-0.65.hdf5'
 gender_model_path = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
@@ -63,6 +63,6 @@ for (x,y,w,h) in faces:
                     2, gender_color, 2, cv2.LINE_AA)
 
 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-cv2.imwrite('../images/classified_robocup_team.png', frame)
+cv2.imwrite('../images/predicted_test_image.png', frame)
 
 
