@@ -6,5 +6,5 @@ Real-time face detection and emotion/gender classification using fer2013/IMDB da
 
 ![alt tag](images/emotion_classification.jpg)
 
-Emotion/gender classification. 
+Emotion/gender classification of our robocup team :) 
 ![alt tag](images/predicted_test_image.png)
