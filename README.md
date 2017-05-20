@@ -1,4 +1,4 @@
-# face_classification
-Face detection and emotion classification using fer2013 dataset, and a keras CNN model. The test accuracy was of 65%. 
+# Face classification and detection
+Real-time face detection with emotion classification using fer2013 dataset, a keras CNN model and openCV's Haar Cascades. The classification test accuracy is of 65%. 
 
-![alt tag](https://github.com/oarriaga/face_classification/blob/master/images/emotion_classification.jpg)
+![alt tag](images/emotion_classification.jpg)
