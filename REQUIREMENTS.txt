@@ -1,7 +1,9 @@
-keras 2.0.3
-tensorflow 1.1.0
-pandas 0.19.1
-numpy 1.12.1
+keras==2.0.3
+tensorflow==1.1.0
+pandas==0.19.1
+numpy==1.12.1
+h5py==2.7.0
+statistics
 
 #optional for video_test.py
-cv2 3.2.0
+opencv2-python==3.2.0
