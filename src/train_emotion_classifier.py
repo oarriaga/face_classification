@@ -7,7 +7,7 @@ Description: Train emotion classification model
 """
 from keras.callbacks import CSVLogger, ModelCheckpoint
 from utils.data_manager import DataManager
-from models.cnn import simple_CNN
+from models.cnn import simpler_CNN
 from utils.utils import preprocess_input
 
 # parameters
@@ -17,7 +17,7 @@ validation_split = .2
 verbose = 1
 dataset_name = 'fer2013'
 log_file_path = '../trained_models/emotion_models/emotion_training.log'
-trained_models_path = '../trained_models/emotion_models/simple_CNN'
+trained_models_path = '../trained_models/emotion_models/simpler_CNN'
 
 # data loader
 data_loader = DataManager(dataset_name)
@@ -27,7 +27,7 @@ num_classes = emotions.shape[1]
 input_shape = faces.shape[1:]
 
 # model parameters/compilation
-model = simple_CNN(input_shape, num_classes)
+model = simpler_CNN(input_shape, num_classes)
 model.compile(optimizer='adam', loss='categorical_crossentropy',
                                         metrics=['accuracy'])
 model.summary()
