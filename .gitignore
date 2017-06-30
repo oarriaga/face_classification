@@ -1,2 +1,2 @@
-datasets/
-src/__pycache__
+datasets
+*.pyc
