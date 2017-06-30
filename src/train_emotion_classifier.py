@@ -6,22 +6,22 @@ Github: https://github.com/oarriaga
 Description: Train emotion classification model
 """
 from keras.callbacks import CSVLogger, ModelCheckpoint
-from data_loader import DataLoader
-from models import simple_CNN
-from utils import preprocess_input
+from utils.data_manager import DataManager
+from models.cnn import simple_CNN
+from utils.utils import preprocess_input
 
 # parameters
 batch_size = 128
 num_epochs = 1000
-training_split = .8
+validation_split = .2
+verbose = 1
 dataset_name = 'fer2013'
-log_file_path = 'log_files/emotion_training.log'
+log_file_path = '../trained_models/emotion_models/emotion_training.log'
 trained_models_path = '../trained_models/emotion_models/simple_CNN'
 
 # data loader
-data_loader = DataLoader(dataset_name)
+data_loader = DataManager(dataset_name)
 faces, emotions = data_loader.get_data()
-print(len(faces))
 faces = preprocess_input(faces)
 num_classes = emotions.shape[1]
 input_shape = faces.shape[1:]
@@ -40,8 +40,6 @@ model_checkpoint = ModelCheckpoint(model_names,
                                 save_best_only=True)
 callbacks = [model_checkpoint, csv_logger]
 
-# model training
-model.fit(faces, emotions, batch_size, num_epochs,verbose=1,
-                                        callbacks=callbacks,
-                        validation_split=(1-training_split),
-                                                shuffle=True)
+# training model
+model.fit(faces, emotions, batch_size, num_epochs, verbose,
+                callbacks, validation_split, shuffle=True)

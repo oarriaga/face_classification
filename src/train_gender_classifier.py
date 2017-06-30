@@ -51,7 +51,7 @@ model_checkpoint = ModelCheckpoint(model_names,
                                    save_best_only=True,
                                    save_weights_only=False)
 
-# model training
+# training model
 model.fit_generator(image_generator.flow(mode='train'),
                     steps_per_epoch=int(len(train_keys) / batch_size),
                     epochs=num_epochs, verbose=1,
