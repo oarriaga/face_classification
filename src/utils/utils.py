@@ -13,9 +13,11 @@ def get_labels(dataset_name):
     else:
         raise Exception('Invalid dataset name')
 
-def preprocess_input(images):
-    images = images/255.0
-    return images
+def preprocess_input(x):
+    x = x / 255.0
+    x = x - 0.5
+    x = x * 2.0
+    return x
 
 def _imread(image_name):
         return imread(image_name)
@@ -23,7 +25,7 @@ def _imread(image_name):
 def _imresize(image_array, size):
         return imresize(image_array, size)
 
-def split_data(ground_truth_data, training_ratio=.8, do_shuffle=False):
+def split_imdb_data(ground_truth_data, training_ratio=.8, do_shuffle=False):
     ground_truth_keys = sorted(ground_truth_data.keys())
     if do_shuffle == True:
         shuffle(ground_truth_keys)
@@ -31,6 +33,19 @@ def split_data(ground_truth_data, training_ratio=.8, do_shuffle=False):
     train_keys = ground_truth_keys[:num_train]
     validation_keys = ground_truth_keys[num_train:]
     return train_keys, validation_keys
+
+def split_data(x, y, validation_split=.2):
+    num_samples = len(x)
+    num_train_samples = int((1 - validation_split)*num_samples)
+    train_x = x[:num_train_samples]
+    train_y = y[:num_train_samples]
+    val_x = x[num_train_samples:]
+    val_y = y[num_train_samples:]
+    train_data = (train_x, train_y)
+    val_data = (val_x, val_y)
+    return train_data, val_data
+
+
 
 def display_image(image_array):
     image_array =  np.squeeze(image_array).astype('uint8')
