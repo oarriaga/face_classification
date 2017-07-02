@@ -1,9 +1,9 @@
 import numpy as np
 from random import shuffle
-from utils import preprocess_input
-from utils import _imread as imread
-from utils import _imresize as imresize
-from utils import to_categorical
+from preprocessor import preprocess_input
+from preprocessor import _imread as imread
+from preprocessor import _imresize as imresize
+from preprocessor import to_categorical
 import scipy.ndimage as ndi
 
 class ImageGenerator(object):

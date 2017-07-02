@@ -7,11 +7,12 @@ Description: Train emotion classification model
 """
 
 from keras.callbacks import CSVLogger, ModelCheckpoint
-from utils.data_manager import DataManager
-from models.cnn import mini_XCEPTION
-from utils.utils import preprocess_input
-from utils.utils import split_data
 from keras.preprocessing.image import ImageDataGenerator
+
+from models.cnn import mini_XCEPTION
+from utils.datasets import DataManager
+from utils.datasets import split_data
+from utils.preprocessor import preprocess_input
 
 # parameters
 batch_size = 128

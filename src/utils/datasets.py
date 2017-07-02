@@ -1,6 +1,7 @@
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
+from random import shuffle
 
 class DataManager(object):
     """Class for loading fer2013 emotion classification dataset or
@@ -58,3 +59,33 @@ class DataManager(object):
         faces = np.expand_dims(faces, -1)
         emotions = pd.get_dummies(data['emotion']).as_matrix()
         return faces, emotions
+
+def get_labels(dataset_name):
+    if dataset_name == 'fer2013':
+        return {0:'angry',1:'disgust',2:'fear',3:'happy',
+                4:'sad',5:'surprise',6:'neutral'}
+    elif dataset_name == 'imdb':
+        return {0:'woman', 1:'man'}
+    else:
+        raise Exception('Invalid dataset name')
+
+def split_imdb_data(ground_truth_data, training_ratio=.8, do_shuffle=False):
+    ground_truth_keys = sorted(ground_truth_data.keys())
+    if do_shuffle == True:
+        shuffle(ground_truth_keys)
+    num_train = int(round(training_ratio * len(ground_truth_keys)))
+    train_keys = ground_truth_keys[:num_train]
+    validation_keys = ground_truth_keys[num_train:]
+    return train_keys, validation_keys
+
+def split_data(x, y, validation_split=.2):
+    num_samples = len(x)
+    num_train_samples = int((1 - validation_split)*num_samples)
+    train_x = x[:num_train_samples]
+    train_y = y[:num_train_samples]
+    val_x = x[num_train_samples:]
+    val_y = y[num_train_samples:]
+    train_data = (train_x, train_y)
+    val_data = (val_x, val_y)
+    return train_data, val_data
+
