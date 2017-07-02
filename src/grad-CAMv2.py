@@ -29,6 +29,7 @@ def normalize(x):
 def load_image():
     image_array = pickle.load(open('test1.pkl','rb'))
     image_array = np.expand_dims(image_array, axis=0)
+    #image_array = np.expand_dims(image_array, axis=-1)
     image_array = preprocess_input(image_array)
     return image_array
 
@@ -87,8 +88,7 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-def calculate_gradient_weighted_CAM(input_model, image,
-                                    category_index, layer_name):
+def compile_gradient_function(input_model, category_index, layer_name):
     model = Sequential()
     model.add(input_model)
 
@@ -98,20 +98,19 @@ def calculate_gradient_weighted_CAM(input_model, image,
                      output_shape = target_category_loss_output_shape))
 
     loss = K.sum(model.layers[-1].output)
-    conv_output = model.layers[0].get_layer('conv2d_6').output
+    conv_output = model.layers[0].get_layer(layer_name).output
     gradients = normalize(K.gradients(loss, conv_output)[0])
     gradient_function = K.function([model.layers[0].input, K.learning_phase()],
                                                     [conv_output, gradients])
+    return gradient_function
 
+def calculate_gradient_weighted_CAM(gradient_function, image):
     output, evaluated_gradients = gradient_function([image, False])
     output, evaluated_gradients = output[0, :], evaluated_gradients[0, :, :, :]
-
     weights = np.mean(evaluated_gradients, axis = (0, 1))
     CAM = np.ones(output.shape[0 : 2], dtype=np.float32)
-
     for weight_arg, weight in enumerate(weights):
         CAM = CAM + (weight * output[:, :, weight_arg])
-
     CAM = cv2.resize(CAM, (48, 48))
     CAM = np.maximum(CAM, 0)
     heatmap = CAM / np.max(CAM)
@@ -134,10 +133,10 @@ if __name__ == '__main__':
 
     predictions = model.predict(preprocessed_input)
     predicted_class = np.argmax(predictions)
-    CAM, heatmap = calculate_gradient_weighted_CAM(model, preprocessed_input,
-                                                predicted_class, 'conv2d_6')
-    cv2.imwrite('gradcam.jpg', CAM)
 
+    gradient_function = compile_gradient_function(model, predicted_class, 'conv2d_6')
+    CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
+    cv2.imwrite('gradcam.jpg', CAM)
     register_gradient()
     guided_model = modify_backprop(model, 'GuidedBackProp')
     get_saliency = compile_saliency_function(guided_model)
