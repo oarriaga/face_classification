@@ -55,7 +55,7 @@ for face_coordinates in faces:
     gray_face = cv2.resize(gray_face, (emotion_target_size))
 
     rgb_face = np.expand_dims(rgb_face, 0)
-    egb_face = preprocess_input(rgb_face, False)
+    rgb_face = preprocess_input(rgb_face, False)
     gender_prediction = gender_classifier.predict(rgb_face)
     gender_label_arg = np.argmax(gender_prediction)
     gender_text = gender_labels[gender_label_arg]
@@ -73,8 +73,8 @@ for face_coordinates in faces:
         color = (255, 0, 0)
 
     draw_bounding_box(face_coordinates, rgb_image, color )
-    draw_text(face_coordinates, rgb_image, gender_text, color, 0 ,-90)
-    draw_text(face_coordinates, rgb_image, emotion_text, color,0, -20)
+    draw_text(face_coordinates, rgb_image, gender_text, color, 0 ,-20)
+    draw_text(face_coordinates, rgb_image, emotion_text, color,0, -90)
 
 bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
 cv2.imwrite('../images/predicted_test_image.png', bgr_image)
