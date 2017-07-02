@@ -45,8 +45,6 @@ def split_data(x, y, validation_split=.2):
     val_data = (val_x, val_y)
     return train_data, val_data
 
-
-
 def display_image(image_array):
     image_array =  np.squeeze(image_array).astype('uint8')
     plt.imshow(image_array)
