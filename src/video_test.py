@@ -47,52 +47,52 @@ while True:
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
     faces = detect_faces(face_detection, gray_image)
-    if faces is not None:
-        for face_coordinates in faces:
 
-            x1, x2, y1, y2 = apply_offsets(face_coordinates, gender_offsets)
-            rgb_face = rgb_image[y1:y2, x1:x2]
+    for face_coordinates in faces:
 
-            x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
-            gray_face = gray_image[y1:y2, x1:x2]
-            try:
-                rgb_face = cv2.resize(rgb_face, (gender_target_size))
-                gray_face = cv2.resize(gray_face, (emotion_target_size))
-            except:
-                continue
-            rgb_face = np.expand_dims(rgb_face, 0)
-            rgb_face = preprocess_input(rgb_face, False)
-            gender_prediction = gender_classifier.predict(rgb_face)
-            gender_label_arg = np.argmax(gender_prediction)
-            gender_text = gender_labels[gender_label_arg]
-            gender_window.append(gender_text)
+        x1, x2, y1, y2 = apply_offsets(face_coordinates, gender_offsets)
+        rgb_face = rgb_image[y1:y2, x1:x2]
 
-            gray_face = preprocess_input(gray_face, False)
-            gray_face = np.expand_dims(gray_face, 0)
-            gray_face = np.expand_dims(gray_face, -1)
-            emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
-            emotion_text = emotion_labels[emotion_label_arg]
-            emotion_window.append(emotion_text)
+        x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
+        gray_face = gray_image[y1:y2, x1:x2]
+        try:
+            rgb_face = cv2.resize(rgb_face, (gender_target_size))
+            gray_face = cv2.resize(gray_face, (emotion_target_size))
+        except:
+            continue
+        rgb_face = np.expand_dims(rgb_face, 0)
+        rgb_face = preprocess_input(rgb_face, False)
+        gender_prediction = gender_classifier.predict(rgb_face)
+        gender_label_arg = np.argmax(gender_prediction)
+        gender_text = gender_labels[gender_label_arg]
+        gender_window.append(gender_text)
 
-            if len(gender_window) > frame_window:
-                emotion_window.pop(0)
-                gender_window.pop(0)
-            try:
-                emotion_mode = mode(emotion_window)
-                gender_mode = mode(gender_window)
-            except:
-                continue
+        gray_face = preprocess_input(gray_face, False)
+        gray_face = np.expand_dims(gray_face, 0)
+        gray_face = np.expand_dims(gray_face, -1)
+        emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
+        emotion_text = emotion_labels[emotion_label_arg]
+        emotion_window.append(emotion_text)
 
-            if gender_text == gender_labels[0]:
-                color = (0, 0, 255)
-            else:
-                color = (255, 0, 0)
+        if len(gender_window) > frame_window:
+            emotion_window.pop(0)
+            gender_window.pop(0)
+        try:
+            emotion_mode = mode(emotion_window)
+            gender_mode = mode(gender_window)
+        except:
+            continue
 
-            draw_bounding_box(face_coordinates, rgb_image, color)
-            draw_text(face_coordinates, rgb_image, gender_mode,
-                                            color, 0, -20, 1, 1)
-            draw_text(face_coordinates, rgb_image, emotion_mode,
-                                            color, 0, -45, 1, 1)
+        if gender_text == gender_labels[0]:
+            color = (0, 0, 255)
+        else:
+            color = (255, 0, 0)
+
+        draw_bounding_box(face_coordinates, rgb_image, color)
+        draw_text(face_coordinates, rgb_image, gender_mode,
+                                        color, 0, -20, 1, 1)
+        draw_text(face_coordinates, rgb_image, emotion_mode,
+                                        color, 0, -45, 1, 1)
 
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('window_frame', bgr_image)
