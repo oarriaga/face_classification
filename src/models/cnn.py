@@ -169,6 +169,22 @@ def mini_XCEPTION(input_shape, num_classes):
     x = MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
     x = layers.add([x, residual])
 
+    residual = Conv2D(128, (1, 1), strides=(1, 1),
+                      padding='same', use_bias=False)(x)
+    residual = BatchNormalization()(residual)
+
+    x = Activation('relu')(x)
+    x = SeparableConv2D(128, (3, 3), padding='same',
+                        kernel_regularizer=regularization,
+                        use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = SeparableConv2D(128, (3, 3), padding='same',
+                        kernel_regularizer=regularization,
+                        use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = layers.add([x, residual])
+
     x = Conv2D(num_classes, (3, 3),
             #kernel_regularizer=regularization,
             padding='same')(x)

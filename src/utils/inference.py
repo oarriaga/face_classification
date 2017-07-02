@@ -35,5 +35,3 @@ def get_colors(num_classes):
     colors = np.asarray(colors) * 255
     return colors
 
-
-
