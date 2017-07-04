@@ -17,7 +17,7 @@ from utils.preprocessor import preprocess_input
 #image_path = '../images/test_image.jpg'
 image_path = sys.argv[1]
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
-emotion_model_path = '../trained_models/emotion_models/simple_CNN.530-0.65.hdf5'
+emotion_model_path = '../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5'
 gender_model_path = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
 emotion_labels = get_labels('fer2013')
 gender_labels = get_labels('imdb')
@@ -44,7 +44,9 @@ gray_image = gray_image.astype('uint8')
 
 faces = detect_faces(face_detection, gray_image)
 for face_coordinates in faces:
-
+    x,y,w,h = face_coordinates
+    if (x + w) > emotion_target_size[1] or (y + h) > emotion_target_size[0]:
+        continue
     x1, x2, y1, y2 = apply_offsets(face_coordinates, gender_offsets)
     rgb_face = rgb_image[y1:y2, x1:x2]
 
@@ -55,12 +57,12 @@ for face_coordinates in faces:
     gray_face = cv2.resize(gray_face, (emotion_target_size))
 
     rgb_face = np.expand_dims(rgb_face, 0)
-    rgb_face = preprocess_input(rgb_face, False)
+    rgb_face = preprocess_input(rgb_face, True)
     gender_prediction = gender_classifier.predict(rgb_face)
     gender_label_arg = np.argmax(gender_prediction)
     gender_text = gender_labels[gender_label_arg]
 
-    gray_face = preprocess_input(gray_face, False)
+    gray_face = preprocess_input(gray_face, True)
     gray_face = np.expand_dims(gray_face, 0)
     gray_face = np.expand_dims(gray_face, -1)
 
