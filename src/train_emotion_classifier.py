@@ -8,6 +8,7 @@ Description: Train emotion classification model
 
 from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
 from keras.preprocessing.image import ImageDataGenerator
+from keras.models import load_model
 
 from models.cnn import mini_XCEPTION
 from utils.datasets import DataManager
@@ -16,7 +17,7 @@ from utils.preprocessor import preprocess_input
 
 # parameters
 batch_size = 128
-num_epochs = 5
+num_epochs = 3
 input_shape = (64, 64, 1)
 validation_split = .2
 verbose = 1
@@ -45,12 +46,19 @@ model.summary()
 datasets = ['KDEF', 'fer2013']
 for dataset_name in datasets:
     print('Training dataset:', dataset_name)
+
     # callbacks
     log_file_path = base_path + dataset_name + '_emotion_training.log'
     csv_logger = CSVLogger(log_file_path, append=False)
-    early_stop = EarlyStopping('val_loss', patience=100)
-    trained_models_path = base_path + dataset_name +'_mini_XCEPTION'
-    model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
+    early_stop = EarlyStopping('val_loss', patience=1000)
+    if dataset_name == 'KDEF':
+        model_names = base_path + 'mini_XCEPTION_KDEF.hdf5'
+    else:
+        trained_models_path = base_path + dataset_name +'_mini_XCEPTION'
+        model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
+        model = load_model(base_path + 'mini_XCEPTION_KDEF.hdf5', compile=False)
+        model.compile(optimizer='adam', loss='categorical_crossentropy',
+                                                    metrics=['accuracy'])
     model_checkpoint = ModelCheckpoint(model_names, 'val_acc', verbose=1,
                                                     save_best_only=True)
     callbacks = [model_checkpoint, csv_logger, early_stop]
