@@ -94,6 +94,7 @@ class DataManager(object):
             except:
                 continue
             emotions[file_arg, emotion_arg] = 1
+        faces = np.expand_dims(faces, -1)
         return faces, emotions
 
 
