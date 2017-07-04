@@ -1,15 +1,15 @@
+import cv2
+import h5py
+import keras
+import keras.backend as K
 from keras.layers.core import Lambda
 from keras.models import Sequential
-from tensorflow.python.framework import ops
-import keras.backend as K
-import tensorflow as tf
-import numpy as np
-import keras
-import cv2
-from utils.utils import preprocess_input
 from keras.models import load_model
-import pickle
-import h5py
+import numpy as np
+import tensorflow as tf
+from tensorflow.python.framework import ops
+
+from .preprocessor import preprocess_input
 
 def reset_optimizer_weights(model_filename):
     model = h5py.File(model_filename, 'r+')
@@ -26,8 +26,8 @@ def normalize(x):
     # utility function to normalize a tensor by its L2 norm
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
 
-def load_image():
-    image_array = pickle.load(open('test1.pkl','rb'))
+def load_image(image_array):
+    #image_array = pickle.load(open('test1.pkl','rb'))
     image_array = np.expand_dims(image_array, axis=0)
     #image_array = np.expand_dims(image_array, axis=-1)
     image_array = preprocess_input(image_array)
@@ -63,7 +63,7 @@ def modify_backprop(model, name):
                 layer.activation = tf.nn.relu
 
         # re-instanciate a new model
-        new_model = load_model('../trained_models/emotion_models/mini_XCEPTION.158-0.61.hdf5')
+        new_model = load_model('../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5')
     return new_model
 
 def deprocess_image(x):
@@ -125,22 +125,30 @@ def calculate_gradient_weighted_CAM(gradient_function, image):
     CAM = 255 * CAM / np.max(CAM)
     return np.uint8(CAM), heatmap
 
+def calculate_guided_gradient_CAM(preprocessed_input, gradient_function, saliency_function):
+    CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
+    saliency = saliency_function([preprocessed_input, 0])
+    gradCAM = saliency[0] * heatmap[..., np.newaxis]
+    return deprocess_image(gradCAM)
+
 if __name__ == '__main__':
-    preprocessed_input = load_image()
-    model_filename = '../trained_models/emotion_models/mini_XCEPTION.158-0.61.hdf5'
+    import pickle
+    faces = pickle.load(open('faces.pkl','rb'))
+    face = faces[0]
+    model_filename = '../../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5'
     #reset_optimizer_weights(model_filename)
     model = load_model(model_filename)
 
+    preprocessed_input = load_image(face)
     predictions = model.predict(preprocessed_input)
     predicted_class = np.argmax(predictions)
-
     gradient_function = compile_gradient_function(model, predicted_class, 'conv2d_6')
-    CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
-    cv2.imwrite('gradcam.jpg', CAM)
     register_gradient()
     guided_model = modify_backprop(model, 'GuidedBackProp')
-    get_saliency = compile_saliency_function(guided_model)
-    saliency = get_saliency([preprocessed_input, 0])
-    gradCAM = saliency[0] * heatmap[..., np.newaxis]
-    cv2.imwrite('guided_gradcam.jpg', deprocess_image(gradCAM))
+    saliency_function = compile_saliency_function(guided_model)
+    guided_gradCAM = calculate_guided_gradient_CAM(preprocessed_input,
+                                gradient_function, saliency_function)
+
+    cv2.imwrite('guided_gradCAM.jpg', guided_gradCAM)
+
 
