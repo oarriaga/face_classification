@@ -7,6 +7,7 @@ Description: Train emotion classification model
 """
 
 from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
+from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 
@@ -16,12 +17,13 @@ from utils.datasets import split_data
 from utils.preprocessor import preprocess_input
 
 # parameters
-batch_size = 128
-num_epochs = 3
+batch_size = 32
+num_epochs = 10000
 input_shape = (64, 64, 1)
 validation_split = .2
 verbose = 1
 num_classes = 7
+patience = 50
 base_path = '../trained_models/emotion_models/'
 
 # data generator
@@ -50,7 +52,9 @@ for dataset_name in datasets:
     # callbacks
     log_file_path = base_path + dataset_name + '_emotion_training.log'
     csv_logger = CSVLogger(log_file_path, append=False)
-    early_stop = EarlyStopping('val_loss', patience=1000)
+    early_stop = EarlyStopping('val_loss', patience=100)
+    reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1,
+                    patience=int(patience/2), verbose=1)
     if dataset_name == 'KDEF':
         model_names = base_path + 'mini_XCEPTION_KDEF.hdf5'
     else:
@@ -59,20 +63,17 @@ for dataset_name in datasets:
         model = load_model(base_path + 'mini_XCEPTION_KDEF.hdf5', compile=False)
         model.compile(optimizer='adam', loss='categorical_crossentropy',
                                                     metrics=['accuracy'])
-    model_checkpoint = ModelCheckpoint(model_names, 'val_acc', verbose=1,
+    model_checkpoint = ModelCheckpoint(model_names, 'val_loss', verbose=1,
                                                     save_best_only=True)
-    callbacks = [model_checkpoint, csv_logger, early_stop]
+    callbacks = [model_checkpoint, csv_logger, early_stop, reduce_lr]
 
     # loading dataset
     data_loader = DataManager(dataset_name, image_size=input_shape[:2])
     faces, emotions = data_loader.get_data()
     faces = preprocess_input(faces)
-    print(faces.shape)
     num_samples, num_classes = emotions.shape
     train_data, val_data = split_data(faces, emotions, validation_split)
     train_faces, train_emotions = train_data
-    print(train_faces.shape)
-    print(train_emotions.shape)
     model.fit_generator(data_generator.flow(train_faces, train_emotions,
                                                             batch_size),
                         steps_per_epoch=len(train_faces) / batch_size,
