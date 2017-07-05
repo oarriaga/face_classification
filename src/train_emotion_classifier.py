@@ -51,9 +51,9 @@ for dataset_name in datasets:
     # callbacks
     log_file_path = base_path + dataset_name + '_emotion_training.log'
     csv_logger = CSVLogger(log_file_path, append=False)
-    early_stop = EarlyStopping('val_loss', patience=100)
+    early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1,
-                    patience=int(patience/2), verbose=1)
+                    patience=int(patience/4), verbose=1)
     if dataset_name == 'KDEF':
         model_names = base_path + 'tiny_XCEPTION_KDEF.hdf5'
     else:

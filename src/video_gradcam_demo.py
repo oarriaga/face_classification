@@ -1,25 +1,36 @@
-from statistics import mode
-
 import cv2
-from keras.models import load_model
 import numpy as np
-
+from keras.models import load_model
+from utils.grad_cam import compile_gradient_function
+from utils.grad_cam import compile_saliency_function
+from utils.grad_cam import register_gradient
+from utils.grad_cam import modify_backprop
+from utils.grad_cam import calculate_guided_gradient_CAM
 from utils.datasets import get_labels
 from utils.inference import detect_faces
-from utils.inference import draw_text
-from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
+from utils.inference import draw_bounding_box
+
+model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+model = load_model(model_filename, compile=False)
+predicted_class = 3
+gradient_function = compile_gradient_function(model, predicted_class, 'conv2d_7')
+register_gradient()
+guided_model = modify_backprop(model, 'GuidedBackProp')
+saliency_function = compile_saliency_function(guided_model)
 
 # parameters for loading data and images 
 #image_path = '../images/test_image.jpg'
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
-emotion_model_path = '../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5'
+emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 emotion_labels = get_labels('fer2013')
+color = (0, 255, 0)
 
 # hyper-parameters for bounding boxes shape
 frame_window = 10
+#emotion_offsets = (0, 0)
 emotion_offsets = (20, 40)
 
 # loading models
@@ -28,6 +39,7 @@ emotion_classifier = load_model(emotion_model_path)
 
 # getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
+print(emotion_target_size)
 
 # starting lists for calculating modes
 emotion_window = []
@@ -53,6 +65,17 @@ while True:
         gray_face = preprocess_input(gray_face, True)
         gray_face = np.expand_dims(gray_face, 0)
         gray_face = np.expand_dims(gray_face, -1)
+        guided_gradCAM = calculate_guided_gradient_CAM(gray_face,
+                            gradient_function, saliency_function)
+        guided_gradCAM = cv2.resize(guided_gradCAM, (x2-x1, y2-y1))
+        try:
+            #gray_image[y1:y2, x1:x2] = guided_gradCAM
+            rgb_guided_gradCAM = np.repeat(guided_gradCAM[:, :, np.newaxis],
+                                                                3, axis=2)
+            rgb_image[y1:y2, x1:x2, :] = rgb_guided_gradCAM
+        except:
+            continue
+        """
         emotion_prediction = emotion_classifier.predict(gray_face)
         emotion_probability = np.max(emotion_prediction)
         emotion_label_arg = np.argmax(emotion_prediction)
@@ -76,13 +99,15 @@ while True:
             color = emotion_probability * np.asarray((0, 255, 0))
         color = color.astype(int)
         color = color.tolist()
+        """
 
-        draw_bounding_box(face_coordinates, rgb_image, color)
-        draw_text(face_coordinates, rgb_image, emotion_mode,
-                                        color, 0, -45, 1, 1)
-
+        draw_bounding_box((x1, y1, x2 - x1, y2 - y1), rgb_image, color)
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    cv2.imshow('window_frame', bgr_image)
+    #cv2.imshow('window_frame', bgr_image)
+    try:
+        cv2.imshow('window_frame', bgr_image)
+    except:
+        continue
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

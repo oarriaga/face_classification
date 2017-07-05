@@ -63,7 +63,7 @@ def modify_backprop(model, name):
                 layer.activation = tf.nn.relu
 
         # re-instanciate a new model
-        new_model = load_model('../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5')
+        new_model = load_model('../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5', compile=False)
     return new_model
 
 def deprocess_image(x):
@@ -111,7 +111,7 @@ def calculate_gradient_weighted_CAM(gradient_function, image):
     CAM = np.ones(output.shape[0 : 2], dtype=np.float32)
     for weight_arg, weight in enumerate(weights):
         CAM = CAM + (weight * output[:, :, weight_arg])
-    CAM = cv2.resize(CAM, (48, 48))
+    CAM = cv2.resize(CAM, (64, 64))
     CAM = np.maximum(CAM, 0)
     heatmap = CAM / np.max(CAM)
 
