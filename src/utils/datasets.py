@@ -97,7 +97,6 @@ class DataManager(object):
         faces = np.expand_dims(faces, -1)
         return faces, emotions
 
-
 def get_labels(dataset_name):
     if dataset_name == 'fer2013':
         return {0:'angry',1:'disgust',2:'fear',3:'happy',
@@ -120,11 +119,12 @@ def get_class_to_arg(dataset_name='fer2013'):
     else:
         raise Exception('Invalid dataset name')
 
-def split_imdb_data(ground_truth_data, training_ratio=.8, do_shuffle=False):
+def split_imdb_data(ground_truth_data, validation_split=.2, do_shuffle=False):
     ground_truth_keys = sorted(ground_truth_data.keys())
     if do_shuffle == True:
         shuffle(ground_truth_keys)
-    num_train = int(round(training_ratio * len(ground_truth_keys)))
+    training_split = 1 - validation_split
+    num_train = int(training_split * len(ground_truth_keys))
     train_keys = ground_truth_keys[:num_train]
     validation_keys = ground_truth_keys[num_train:]
     return train_keys, validation_keys
