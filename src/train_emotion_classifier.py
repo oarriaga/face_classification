@@ -11,7 +11,7 @@ from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 
-from models.cnn import mini_XCEPTION
+from models.cnn import tiny_XCEPTION
 from utils.datasets import DataManager
 from utils.datasets import split_data
 from utils.preprocessor import preprocess_input
@@ -36,9 +36,8 @@ data_generator = ImageDataGenerator(
                         zoom_range=.1,
                         horizontal_flip=True)
 
-
 # model parameters/compilation
-model = mini_XCEPTION(input_shape, num_classes)
+model = tiny_XCEPTION(input_shape, num_classes)
 model.compile(optimizer='adam', loss='categorical_crossentropy',
                                         metrics=['accuracy'])
 model.summary()
@@ -56,11 +55,11 @@ for dataset_name in datasets:
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1,
                     patience=int(patience/2), verbose=1)
     if dataset_name == 'KDEF':
-        model_names = base_path + 'mini_XCEPTION_KDEF.hdf5'
+        model_names = base_path + 'tiny_XCEPTION_KDEF.hdf5'
     else:
-        trained_models_path = base_path + dataset_name +'_mini_XCEPTION'
+        trained_models_path = base_path + dataset_name +'_tiny_XCEPTION'
         model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
-        model = load_model(base_path + 'mini_XCEPTION_KDEF.hdf5', compile=False)
+        model = load_model(base_path + 'tiny_XCEPTION_KDEF.hdf5', compile=False)
         model.compile(optimizer='adam', loss='categorical_crossentropy',
                                                     metrics=['accuracy'])
     model_checkpoint = ModelCheckpoint(model_names, 'val_loss', verbose=1,
