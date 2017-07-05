@@ -1,10 +1,11 @@
 import numpy as np
 from random import shuffle
-from preprocessor import preprocess_input
-from preprocessor import _imread as imread
-from preprocessor import _imresize as imresize
-from preprocessor import to_categorical
+from .preprocessor import preprocess_input
+from .preprocessor import _imread as imread
+from .preprocessor import _imresize as imresize
+from .preprocessor import to_categorical
 import scipy.ndimage as ndi
+import cv2
 
 class ImageGenerator(object):
     """ Image generator with saturation, brightness, lighting, contrast,
@@ -27,6 +28,7 @@ class ImageGenerator(object):
                 horizontal_flip_probability=0.5,
                 vertical_flip_probability=0.5,
                 do_random_crop=False,
+                grayscale=False,
                 zoom_range=[0.75, 1.25],
                 translation_factor=.3):
 
@@ -37,6 +39,7 @@ class ImageGenerator(object):
         self.train_keys = train_keys
         self.validation_keys = validation_keys
         self.image_size = image_size
+        self.grayscale = grayscale
         self.color_jitter = []
         if saturation_var:
             self.saturation_var = saturation_var
@@ -97,8 +100,6 @@ class ImageGenerator(object):
         image_array = np.stack(image_channel, axis=0)
         image_array = np.rollaxis(image_array, 0, 3)
         return image_array
-
-
 
     def _gray_scale(self, image_array):
         return image_array.dot([0.299, 0.587, 0.114])
@@ -162,7 +163,6 @@ class ImageGenerator(object):
         if self.vertical_flip_probability > 0:
             image_array, box_corners = self.vertical_flip(image_array,
                                                             box_corners)
-
         return image_array, box_corners
 
     def preprocess_images(self, image_array):
@@ -207,6 +207,11 @@ class ImageGenerator(object):
                         else:
                             image_array = self.transform(image_array)[0]
 
+                    if self.grayscale:
+                        image_array = cv2.cvtColor(image_array.astype('uint8'),
+                                        cv2.COLOR_RGB2GRAY).astype('float32')
+                        image_array = np.expand_dims(image_array, -1)
+
                     inputs.append(image_array)
                     targets.append(ground_truth)
                     if len(targets) == self.batch_size:
@@ -223,5 +228,5 @@ class ImageGenerator(object):
                         targets = []
 
     def _wrap_in_dictionary(self, image_array, targets):
-        return [{'image_array_input':image_array},
+        return [{'input_1':image_array},
                 {'predictions':targets}]
