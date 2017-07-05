@@ -24,4 +24,16 @@ Emotion examples
 * Run the train_emotion_classification.py file
 > python3 train_emotion_classifier.py
 
+### To train previous/new models for gender classification:
+
+* Download the imdb_crop.tar file from [here](https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/) (It's the 7GB button with the tittle Download faces only).
+
+* Move the downloaded file to the datasets directory inside this repository.
+
+* Untar the file:
+> tar -xfv imdb_crop.tar
+
+* Run the train_emotion_classification.py file
+> python3 train_emotion_classifier.py
+
 
