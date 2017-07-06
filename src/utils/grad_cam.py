@@ -49,7 +49,7 @@ def compile_saliency_function(model, activation_layer='conv2d_6'):
     saliency = K.gradients(K.sum(max_output), input_image)[0]
     return K.function([input_image, K.learning_phase()], [saliency])
 
-def modify_backprop(model, name):
+def modify_backprop(model, name, task):
     graph = tf.get_default_graph()
     with graph.gradient_override_map({'Relu': name}):
 
@@ -63,7 +63,11 @@ def modify_backprop(model, name):
                 layer.activation = tf.nn.relu
 
         # re-instanciate a new model
-        new_model = load_model('../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5', compile=False)
+        if task == 'gender':
+            model_path = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
+        elif task == 'emotion':
+            model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+        new_model = load_model(model_path, compile=False)
     return new_model
 
 def deprocess_image(x):

@@ -1,3 +1,5 @@
+import sys
+
 import cv2
 import numpy as np
 from keras.models import load_model
@@ -6,40 +8,40 @@ from utils.grad_cam import compile_saliency_function
 from utils.grad_cam import register_gradient
 from utils.grad_cam import modify_backprop
 from utils.grad_cam import calculate_guided_gradient_CAM
-from utils.datasets import get_labels
 from utils.inference import detect_faces
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
 from utils.inference import draw_bounding_box
+from utils.datasets import get_class_to_arg
 
-model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+# getting the correct model given the input
+task = sys.argv[1]
+class_name = sys.argv[2]
+if task == 'gender':
+    model_filename = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
+    class_to_arg = get_class_to_arg('imdb')
+    predicted_class = class_to_arg[class_name]
+    offsets = (30, 60)
+elif task == 'emotion':
+    model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+    class_to_arg = get_class_to_arg('fer2013')
+    predicted_class = class_to_arg[class_name]
+    offsets = (20, 40)
+
 model = load_model(model_filename, compile=False)
-predicted_class = 3
 gradient_function = compile_gradient_function(model, predicted_class, 'conv2d_7')
 register_gradient()
-guided_model = modify_backprop(model, 'GuidedBackProp')
+guided_model = modify_backprop(model, 'GuidedBackProp', task)
 saliency_function = compile_saliency_function(guided_model)
 
 # parameters for loading data and images 
-#image_path = '../images/test_image.jpg'
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
-emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
-emotion_labels = get_labels('fer2013')
+face_detection = load_detection_model(detection_model_path)
 color = (0, 255, 0)
 
-# hyper-parameters for bounding boxes shape
-frame_window = 10
-#emotion_offsets = (0, 0)
-emotion_offsets = (20, 40)
-
-# loading models
-face_detection = load_detection_model(detection_model_path)
-emotion_classifier = load_model(emotion_model_path)
-
 # getting input model shapes for inference
-emotion_target_size = emotion_classifier.input_shape[1:3]
-print(emotion_target_size)
+target_size = model.input_shape[1:3]
 
 # starting lists for calculating modes
 emotion_window = []
@@ -55,10 +57,10 @@ while True:
 
     for face_coordinates in faces:
 
-        x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
+        x1, x2, y1, y2 = apply_offsets(face_coordinates, offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
-            gray_face = cv2.resize(gray_face, (emotion_target_size))
+            gray_face = cv2.resize(gray_face, (target_size))
         except:
             continue
 
@@ -69,41 +71,13 @@ while True:
                             gradient_function, saliency_function)
         guided_gradCAM = cv2.resize(guided_gradCAM, (x2-x1, y2-y1))
         try:
-            #gray_image[y1:y2, x1:x2] = guided_gradCAM
             rgb_guided_gradCAM = np.repeat(guided_gradCAM[:, :, np.newaxis],
                                                                 3, axis=2)
             rgb_image[y1:y2, x1:x2, :] = rgb_guided_gradCAM
         except:
             continue
-        """
-        emotion_prediction = emotion_classifier.predict(gray_face)
-        emotion_probability = np.max(emotion_prediction)
-        emotion_label_arg = np.argmax(emotion_prediction)
-        emotion_text = emotion_labels[emotion_label_arg]
-        emotion_window.append(emotion_text)
-
-        if len(emotion_window) > frame_window:
-            emotion_window.pop(0)
-        try:
-            emotion_mode = mode(emotion_window)
-        except:
-            continue
-
-        if emotion_text == 'angry':
-            color = emotion_probability * np.asarray((255, 0, 0))
-        elif emotion_text == 'sad':
-            color = emotion_probability * np.asarray((0, 0, 255))
-        elif emotion_text == 'happy':
-            color = emotion_probability * np.asarray((255, 255, 0))
-        else:
-            color = emotion_probability * np.asarray((0, 255, 0))
-        color = color.astype(int)
-        color = color.tolist()
-        """
-
         draw_bounding_box((x1, y1, x2 - x1, y2 - y1), rgb_image, color)
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    #cv2.imshow('window_frame', bgr_image)
     try:
         cv2.imshow('window_frame', bgr_image)
     except:
