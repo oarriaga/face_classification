@@ -19,20 +19,19 @@ from utils.inference import load_image
 
 
 # parameters 
-emotion = True
 image_path = sys.argv[1]
-if emotion:
+task = sys.argv[2]
+
+if task == 'emotion':
     labels = get_labels('fer2013')
     offsets = (0, 0)
     model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
-else:
+elif task == 'gender':
     labels = get_labels('imdb')
     offsets = (30, 60)
-    model_filename = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
+    model_filename = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
 
 color = (0, 255, 0)
-
-# hyper-parameters for bounding boxes shape
 
 # loading models
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
@@ -72,7 +71,7 @@ for face_coordinates in faces:
     gradient_function = compile_gradient_function(model,
                             predicted_class, 'conv2d_7')
     register_gradient()
-    guided_model = modify_backprop(model, 'GuidedBackProp')
+    guided_model = modify_backprop(model, 'GuidedBackProp', task)
     saliency_function = compile_saliency_function(guided_model)
 
     guided_gradCAM = calculate_guided_gradient_CAM(gray_face,
