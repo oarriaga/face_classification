@@ -3,8 +3,10 @@ import matplotlib.cm as cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.pyplot as plt
 import numpy.ma as ma
+import cv2
+from .inference import draw_text
 
-def make_mosaic(images, num_rows, num_cols, border=1):
+def make_mosaic(images, num_rows, num_cols, border=1, class_names=None):
     num_images = len(images)
     image_shape = images.shape[1:]
     mosaic = ma.masked_all((num_rows * image_shape[0] + (num_rows - 1) * border,
