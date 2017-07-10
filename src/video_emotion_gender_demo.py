@@ -16,6 +16,7 @@ from utils.preprocessor import preprocess_input
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 gender_model_path = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
+#gender_model_path = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
 emotion_labels = get_labels('fer2013')
 gender_labels = get_labels('imdb')
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -59,6 +60,13 @@ while True:
             gray_face = cv2.resize(gray_face, (emotion_target_size))
         except:
             continue
+        gray_face = preprocess_input(gray_face, False)
+        gray_face = np.expand_dims(gray_face, 0)
+        gray_face = np.expand_dims(gray_face, -1)
+        emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
+        emotion_text = emotion_labels[emotion_label_arg]
+        emotion_window.append(emotion_text)
+
         rgb_face = np.expand_dims(rgb_face, 0)
         rgb_face = preprocess_input(rgb_face, False)
         gender_prediction = gender_classifier.predict(rgb_face)
@@ -66,12 +74,6 @@ while True:
         gender_text = gender_labels[gender_label_arg]
         gender_window.append(gender_text)
 
-        gray_face = preprocess_input(gray_face, False)
-        gray_face = np.expand_dims(gray_face, 0)
-        gray_face = np.expand_dims(gray_face, -1)
-        emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
-        emotion_text = emotion_labels[emotion_label_arg]
-        emotion_window.append(emotion_text)
 
         if len(gender_window) > frame_window:
             emotion_window.pop(0)
