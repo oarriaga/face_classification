@@ -27,9 +27,7 @@ def normalize(x):
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
 
 def load_image(image_array):
-    #image_array = pickle.load(open('test1.pkl','rb'))
     image_array = np.expand_dims(image_array, axis=0)
-    #image_array = np.expand_dims(image_array, axis=-1)
     image_array = preprocess_input(image_array)
     return image_array
 
@@ -67,6 +65,8 @@ def modify_backprop(model, name, task):
             model_path = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
         elif task == 'emotion':
             model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+            #model_path = '../trained_models/fer2013_mini_XCEPTION.119-0.65.hdf5'
+            #model_path = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
         new_model = load_model(model_path, compile=False)
     return new_model
 
@@ -134,6 +134,20 @@ def calculate_guided_gradient_CAM(preprocessed_input, gradient_function, salienc
     saliency = saliency_function([preprocessed_input, 0])
     gradCAM = saliency[0] * heatmap[..., np.newaxis]
     return deprocess_image(gradCAM)
+    #return deprocess_image(saliency[0])
+
+def calculate_guided_gradient_CAM_v2(preprocessed_input, gradient_function,
+                                    saliency_function, target_size=(128, 128)):
+    CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
+    heatmap = np.squeeze(heatmap)
+    heatmap = cv2.resize(heatmap.astype('uint8'), target_size)
+    saliency = saliency_function([preprocessed_input, 0])
+    saliency = np.squeeze(saliency[0])
+    saliency = cv2.resize(saliency.astype('uint8'), target_size)
+    gradCAM = saliency * heatmap
+    gradCAM =  deprocess_image(gradCAM)
+    return np.expand_dims(gradCAM, -1)
+
 
 if __name__ == '__main__':
     import pickle

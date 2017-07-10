@@ -340,8 +340,6 @@ def big_XCEPTION(input_shape, num_classes):
     return model
 
 
-
-
 if __name__ == "__main__":
     input_shape = (64, 64, 1)
     num_classes = 7
