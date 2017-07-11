@@ -5,7 +5,7 @@ Real-time face detection and emotion/gender classification using fer2013/IMDB da
 
 
 <div align='center'>
-  <img src='images/color_demo.gif' width='700px'>
+  <img src='images/color_demo.gif' width='400px'>
 </div>
 
 Emotion/gender classification of the [B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :) 
