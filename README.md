@@ -1,23 +1,24 @@
-# Face classification and detection from the B-IT-BOTS robotics team.
+# Face classification and detection from the [B-IT-BOTS robotics team](https://mas-group.inf.h-brs.de/?page_id=622).
 Real-time face detection and emotion/gender classification using fer2013/IMDB datasets with a keras CNN model and openCV.
 * IMDB gender classification test accuracy: 96%.
 * fer2013 emotion classification test accuracy: 66%.
 
 For more information please consult the [technical report](https://github.com/oarriaga/face_classification/blob/master/technical_report.pdf)
 
-[B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :)
-![alt tag](images/robocup_team.png)
+Emotion/gender examples:
+![alt tag](images/demo_results.png)
+
+Guided back-prop
+![alt tag](images/gradcam_results.png)
 
 Real-time demo:
 <div align='center'>
   <img src='images/color_demo.gif' width='400px'>
 </div>
 
-Emotion/gender examples:
-![alt tag](images/demo_results.png)
+[B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :)
+![alt tag](images/robocup_team.png)
 
-Guided back-prop
-![alt tag](images/gradcam_results.png)
 
 ## Instructions
 
