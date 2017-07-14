@@ -20,12 +20,13 @@ from utils.inference import load_image
 
 # parameters
 image_path = sys.argv[1]
-task = sys.argv[2]
-
+# task = sys.argv[2]
+task = 'emotion'
 if task == 'emotion':
     labels = get_labels('fer2013')
     offsets = (0, 0)
-    model_filename = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
+    # model_filename = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
+    model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 elif task == 'gender':
     labels = get_labels('imdb')
     offsets = (30, 60)
@@ -69,10 +70,10 @@ for face_coordinates in faces:
     label_text = labels[predicted_class]
 
     gradient_function = compile_gradient_function(model,
-                            predicted_class, 'conv2d_5')
+                            predicted_class, 'conv2d_7')
     register_gradient()
     guided_model = modify_backprop(model, 'GuidedBackProp', task)
-    saliency_function = compile_saliency_function(guided_model, 'conv2d_5')
+    saliency_function = compile_saliency_function(guided_model, 'conv2d_7')
 
     guided_gradCAM = calculate_guided_gradient_CAM(gray_face,
                         gradient_function, saliency_function)
