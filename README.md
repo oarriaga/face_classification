@@ -4,15 +4,21 @@ Real-time face detection and emotion/gender classification using fer2013/IMDB da
 * fer2013 emotion classification test accuracy: 66%.
 
 
+Emotion examples
+![alt tag](images/demo_results.png)
+
+Emotion/gender classification of the [B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :)
+![alt tag](images/robocup_team.png)
+
+Guided back-prop
+![alt tag](images/gradcam_results.png)
+
+Live demo
 <div align='center'>
   <img src='images/color_demo.gif' width='400px'>
 </div>
 
-Emotion/gender classification of the [B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :) 
-![alt tag](images/predicted_test_image.png)
 
-Emotion examples
-![alt tag](images/emotion_classification.jpg)
 
 ## Instructions
 
