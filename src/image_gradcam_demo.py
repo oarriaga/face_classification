@@ -18,7 +18,7 @@ from utils.inference import draw_bounding_box
 from utils.inference import load_image
 
 
-# parameters 
+# parameters
 image_path = sys.argv[1]
 task = sys.argv[2]
 

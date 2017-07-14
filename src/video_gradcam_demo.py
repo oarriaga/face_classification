@@ -16,18 +16,21 @@ from utils.inference import draw_bounding_box
 from utils.datasets import get_class_to_arg
 
 # getting the correct model given the input
-task = sys.argv[1]
-class_name = sys.argv[2]
+# task = sys.argv[1]
+# class_name = sys.argv[2]
+task = 'emotion'
 if task == 'gender':
     model_filename = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
     class_to_arg = get_class_to_arg('imdb')
-    predicted_class = class_to_arg[class_name]
+    # predicted_class = class_to_arg[class_name]
+    predicted_class = 0
     offsets = (0, 0)
 elif task == 'emotion':
     model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
-    #model_filename = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
+    # model_filename = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
     class_to_arg = get_class_to_arg('fer2013')
-    predicted_class = class_to_arg[class_name]
+    # predicted_class = class_to_arg[class_name]
+    predicted_class = 0
     offsets = (0, 0)
 
 model = load_model(model_filename, compile=False)

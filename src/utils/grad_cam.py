@@ -11,34 +11,41 @@ from tensorflow.python.framework import ops
 
 from .preprocessor import preprocess_input
 
+
 def reset_optimizer_weights(model_filename):
     model = h5py.File(model_filename, 'r+')
     del model['optimizer_weights']
     model.close()
 
+
 def target_category_loss(x, category_index, num_classes):
     return tf.multiply(x, K.one_hot([category_index], num_classes))
+
 
 def target_category_loss_output_shape(input_shape):
     return input_shape
 
+
 def normalize(x):
     # utility function to normalize a tensor by its L2 norm
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
+
 
 def load_image(image_array):
     image_array = np.expand_dims(image_array, axis=0)
     image_array = preprocess_input(image_array)
     return image_array
 
+
 def register_gradient():
     if "GuidedBackProp" not in ops._gradient_registry._registry:
         @ops.RegisterGradient("GuidedBackProp")
         def _GuidedBackProp(op, gradient):
             dtype = op.inputs[0].dtype
-            guided_gradient =  (gradient * tf.cast(gradient > 0., dtype) *
-                                tf.cast(op.inputs[0] > 0., dtype))
+            guided_gradient = (gradient * tf.cast(gradient > 0., dtype) *
+                               tf.cast(op.inputs[0] > 0., dtype))
             return guided_gradient
+
 
 def compile_saliency_function(model, activation_layer='conv2d_7'):
     input_image = model.input
@@ -47,13 +54,14 @@ def compile_saliency_function(model, activation_layer='conv2d_7'):
     saliency = K.gradients(K.sum(max_output), input_image)[0]
     return K.function([input_image, K.learning_phase()], [saliency])
 
+
 def modify_backprop(model, name, task):
     graph = tf.get_default_graph()
     with graph.gradient_override_map({'Relu': name}):
 
         # get layers that have an activation
         activation_layers = [layer for layer in model.layers
-                      if hasattr(layer, 'activation')]
+                             if hasattr(layer, 'activation')]
 
         # replace relu activation
         for layer in activation_layers:
@@ -65,10 +73,11 @@ def modify_backprop(model, name, task):
             model_path = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
         elif task == 'emotion':
             model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
-            #model_path = '../trained_models/fer2013_mini_XCEPTION.119-0.65.hdf5'
-            #model_path = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
+            # model_path = '../trained_models/fer2013_mini_XCEPTION.119-0.65.hdf5'
+            # model_path = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
         new_model = load_model(model_path, compile=False)
     return new_model
+
 
 def deprocess_image(x):
     """ Same normalization as in:
