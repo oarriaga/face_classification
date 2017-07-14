@@ -40,7 +40,7 @@ def register_gradient():
                                 tf.cast(op.inputs[0] > 0., dtype))
             return guided_gradient
 
-def compile_saliency_function(model, activation_layer='conv2d_6'):
+def compile_saliency_function(model, activation_layer='conv2d_7'):
     input_image = model.input
     layer_output = model.get_layer(activation_layer).output
     max_output = K.max(layer_output, axis=3)
@@ -133,8 +133,9 @@ def calculate_guided_gradient_CAM(preprocessed_input, gradient_function, salienc
     CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
     saliency = saliency_function([preprocessed_input, 0])
     gradCAM = saliency[0] * heatmap[..., np.newaxis]
-    return deprocess_image(gradCAM)
-    #return deprocess_image(saliency[0])
+    #return deprocess_image(gradCAM)
+    return deprocess_image(saliency[0])
+    #return saliency[0]
 
 def calculate_guided_gradient_CAM_v2(preprocessed_input, gradient_function,
                                     saliency_function, target_size=(128, 128)):

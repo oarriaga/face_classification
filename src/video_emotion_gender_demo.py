@@ -1,3 +1,8 @@
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+import time
 from statistics import mode
 
 import cv2
@@ -16,7 +21,6 @@ from utils.preprocessor import preprocess_input
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 gender_model_path = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
-#gender_model_path = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
 emotion_labels = get_labels('fer2013')
 gender_labels = get_labels('imdb')
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -40,9 +44,12 @@ gender_window = []
 emotion_window = []
 
 # starting video streaming
+times = []
 cv2.namedWindow('window_frame')
 video_capture = cv2.VideoCapture(0)
 while True:
+
+    start = time.time()
     bgr_image = video_capture.read()[1]
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
@@ -97,6 +104,9 @@ while True:
 
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('window_frame', bgr_image)
+    end = time.time()
+    print(end - start)
+    times.append(end - start)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

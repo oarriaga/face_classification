@@ -22,18 +22,19 @@ if task == 'gender':
     model_filename = '../trained_models/gender_models/gender_mini_XCEPTION.21-0.95.hdf5'
     class_to_arg = get_class_to_arg('imdb')
     predicted_class = class_to_arg[class_name]
-    offsets = (30, 60)
+    offsets = (0, 0)
 elif task == 'emotion':
     model_filename = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+    #model_filename = '../trained_models/fer2013_big_XCEPTION.54-0.66.hdf5'
     class_to_arg = get_class_to_arg('fer2013')
     predicted_class = class_to_arg[class_name]
-    offsets = (20, 40)
+    offsets = (0, 0)
 
 model = load_model(model_filename, compile=False)
 gradient_function = compile_gradient_function(model, predicted_class, 'conv2d_7')
 register_gradient()
 guided_model = modify_backprop(model, 'GuidedBackProp', task)
-saliency_function = compile_saliency_function(guided_model)
+saliency_function = compile_saliency_function(guided_model, 'conv2d_7')
 
 # parameters for loading data and images 
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'

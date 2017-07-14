@@ -9,7 +9,6 @@ Description: Train emotion classification model
 from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import load_model
 
 from models.cnn import tiny_XCEPTION
 from utils.datasets import DataManager
@@ -43,8 +42,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy',
 model.summary()
 
 
-# TRAINING THE KDEF/FER2013 DATASETS ==========================================
-datasets = ['KDEF', 'fer2013']
+datasets = ['fer2013']
 for dataset_name in datasets:
     print('Training dataset:', dataset_name)
 
@@ -54,14 +52,8 @@ for dataset_name in datasets:
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1,
                     patience=int(patience/4), verbose=1)
-    if dataset_name == 'KDEF':
-        model_names = base_path + 'tiny_XCEPTION_KDEF.hdf5'
-    else:
-        trained_models_path = base_path + dataset_name +'_tiny_XCEPTION'
-        model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
-        model = load_model(base_path + 'tiny_XCEPTION_KDEF.hdf5', compile=False)
-        model.compile(optimizer='adam', loss='categorical_crossentropy',
-                                                    metrics=['accuracy'])
+    trained_models_path = base_path + dataset_name +'_tiny_XCEPTION'
+    model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
     model_checkpoint = ModelCheckpoint(model_names, 'val_loss', verbose=1,
                                                     save_best_only=True)
     callbacks = [model_checkpoint, csv_logger, early_stop, reduce_lr]
