@@ -10,9 +10,10 @@ from utils.grad_cam import register_gradient
 from utils.grad_cam import modify_backprop
 from utils.grad_cam import calculate_guided_gradient_CAM
 from utils.datasets import get_labels
-from utils.inference import detect_faces
 from utils.inference import apply_offsets
+from utils.inference import detect_faces
 from utils.inference import load_detection_model
+from utils.inference import make_face_coordinates
 from utils.preprocessor import preprocess_input
 from utils.inference import draw_bounding_box
 from utils.inference import load_image
@@ -35,20 +36,21 @@ elif task == 'gender':
 color = (0, 255, 0)
 
 # loading models
-detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 model = load_model(model_filename, compile=False)
 target_size = model.input_shape[1:3]
-face_detection = load_detection_model(detection_model_path)
+face_detection = load_detection_model()
 
 # loading images
 rgb_image = load_image(image_path, grayscale=False)
 gray_image = load_image(image_path, grayscale=True)
 gray_image = np.squeeze(gray_image)
 gray_image = gray_image.astype('uint8')
-faces = detect_faces(face_detection, gray_image)
+detected_faces, score, idx = detect_faces(face_detection, gray_image)
 
 # start prediction for every image
-for face_coordinates in faces:
+for detected_face in detected_faces:
+
+    face_coordinates = make_face_coordinates(detected_face)
 
     x1, x2, y1, y2 = apply_offsets(face_coordinates, offsets)
     rgb_face = rgb_image[y1:y2, x1:x2]

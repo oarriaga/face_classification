@@ -1,4 +1,5 @@
 import cv2
+import dlib
 import matplotlib.pyplot as plt
 import numpy as np
 from keras.preprocessing import image
@@ -7,12 +8,18 @@ def load_image(image_path, grayscale=False, target_size=None):
     pil_image = image.load_img(image_path, grayscale, target_size)
     return image.img_to_array(pil_image)
 
-def load_detection_model(model_path):
-    detection_model = cv2.CascadeClassifier(model_path)
-    return detection_model
+def load_detection_model():
+    return dlib.get_frontal_face_detector()
 
 def detect_faces(detection_model, gray_image_array):
-    return detection_model.detectMultiScale(gray_image_array, 1.3, 5)
+    return detection_model.run(gray_image_array, 0, 0)
+
+def make_face_coordinates(detected_face):
+    x = detected_face.left()
+    y = detected_face.top()
+    width = detected_face.right() - detected_face.left()
+    height = detected_face.bottom() - detected_face.top()
+    return [x, y, width, height]
 
 def draw_bounding_box(face_coordinates, image_array, color):
     x, y, w, h = face_coordinates
