@@ -5,7 +5,16 @@ Real-time face detection and emotion/gender classification using fer2013/IMDB da
 
 For more information please consult the [technical report](https://github.com/oarriaga/face_classification/blob/master/technical_report.pdf)
 
-Emotion/gender examples:
+# Running with Docker
+
+With a few steps one can get its own face classification and detection running. Follow the commands below:
+
+* ```docker pull ekholabs/face-classifier```
+* ```docker run -d -p 8084:8084 --name=face-classifier ekholabs/face-classifier```
+* ```curl -v -F face=@[path_to_image]  http://localhost:8084/process > image.png```
+
+# Emotion/gender examples:
+
 ![alt tag](images/demo_results.png)
 
 Guided back-prop
@@ -18,7 +27,6 @@ Real-time demo:
 
 [B-IT-BOTS](https://mas-group.inf.h-brs.de/?page_id=622) robotics team :)
 ![alt tag](images/robocup_team.png)
-
 
 ## Instructions
 
