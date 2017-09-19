@@ -11,7 +11,7 @@ With a few steps one can get its own face classification and detection running. 
 
 * ```docker pull ekholabs/face-classifier```
 * ```docker run -d -p 8084:8084 --name=face-classifier ekholabs/face-classifier```
-* ```curl -v -F face=@[path_to_image]  http://localhost:8084/classifyImage > image.png```
+* ```curl -v -F image=@[path_to_image]  http://localhost:8084/classifyImage > image.png```
 
 # Emotion/gender examples:
 
