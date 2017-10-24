@@ -44,8 +44,8 @@ Real-time demo:
 * Untar the file:
 > tar -xfv imdb_crop.tar
 
-* Run the train_emotion_classification.py file
-> python3 train_emotion_classifier.py
+* Run the train_gender_classification.py file
+> python3 train_gender_classifier.py
 
 ### Run real-time emotion demo:
 > python3 video_emotion_color_demo.py
