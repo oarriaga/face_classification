@@ -18,3 +18,7 @@ pip3 install -r REQUIREMENTS.txt --upgrade
 cd src
 python3 image_emotion_demo.py your-image-path
 ```
+
+## Dataset
+
+The `fer2013` dataset is stored in `dataset` directory, just unzip it, the directory structure is in code.
