@@ -345,9 +345,9 @@ if __name__ == "__main__":
     num_classes = 7
     #model = tiny_XCEPTION(input_shape, num_classes)
     #model.summary()
-    #model = mini_XCEPTION(input_shape, num_classes)
-    #model.summary()
+    model = mini_XCEPTION(input_shape, num_classes)
+    model.summary()
     #model = big_XCEPTION(input_shape, num_classes)
     #model.summary()
-    model = simple_CNN((48, 48, 1), num_classes)
-    model.summary()
+    #model = simple_CNN((48, 48, 1), num_classes)
+    #model.summary()

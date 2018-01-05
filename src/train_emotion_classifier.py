@@ -59,7 +59,7 @@ for dataset_name in datasets:
     callbacks = [model_checkpoint, csv_logger, early_stop, reduce_lr]
 
     # loading dataset
-    data_loader = DataManager(dataset_name, image_size=input_shape[:2])
+    data_loader = DataManager(image_size=input_shape[:2])
     faces, emotions = data_loader.get_data()
     faces = preprocess_input(faces)
     num_samples, num_classes = emotions.shape
