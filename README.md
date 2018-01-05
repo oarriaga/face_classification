@@ -1,6 +1,6 @@
 # Face classification
 
-The project foked from ![oarriaga/face_classification](https://github.com/oarriaga/face_classification). The origin project has very rich information for model and code.
+The project foked from [oarriaga/face_classification](https://github.com/oarriaga/face_classification). The origin project has very rich information for model and code.
 
 Current project just reserves the minimum code for model training and data processing.
 
