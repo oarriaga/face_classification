@@ -22,7 +22,7 @@ pippackagelist=(
 ### Install debian packages listed in array above
 if [ $INSTALL_PACKAGES != false ]; then
     sudo apt-get install -y ${packagelist[@]}
-    sudo pip install ${pippackagelist[@]}
+    sudo pip2 install ${pippackagelist[@]}
 fi
 
 ### install further repositories if repository.rosinstall file exists
