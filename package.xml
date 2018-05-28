@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package>
+ <name>face_classification</name>
+ <version>1.0.0</version>
+ <description>
+ 	Package for face detection and gender and emotion classification
+ </description>
+
+ <license>GPLv3</license>
+
+ <author email="miguel.oliveira.silva@tecnico.ulisboa.pt">Miguel Silva</author>
+ <maintainer email="miguel.oliveira.silva@tecnico.ulisboa.pt">Miguel Silva</maintainer>
+
+ <buildtool_depend>catkin</buildtool_depend>
+
+ <build_depend>rospy</build_depend>
+ <build_depend>rospkg</build_depend>
+ <build_depend>message_generation</build_depend>
+ <build_depend>std_msgs</build_depend>
+ <build_depend>sensor_msgs</build_depend>
+ <build_depend>cv_bridge</build_depend>
+
+ <run_depend>rospy</run_depend>
+ <run_depend>rospkg</run_depend>
+ <run_depend>message_runtime</run_depend>
+ <run_depend>std_msgs</run_depend>
+ <run_depend>sensor_msgs</run_depend>
+ <run_depend>cv_bridge</run_depend>
+
+ <test_depend>roslaunch</test_depend>
+
+</package>

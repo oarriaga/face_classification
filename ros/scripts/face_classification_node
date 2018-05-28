@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import face_classification_ros.face_classification_node
+
+if __name__ == '__main__':
+ face_classification_ros.face_classification_node.main()

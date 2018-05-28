@@ -18,9 +18,11 @@ def draw_bounding_box(face_coordinates, image_array, color):
     x, y, w, h = face_coordinates
     cv2.rectangle(image_array, (x, y), (x + w, y + h), color, 2)
 
-def apply_offsets(face_coordinates, offsets):
+def apply_offsets(face_coordinates, offsets_percentage):
     x, y, width, height = face_coordinates
-    x_off, y_off = offsets
+    x_pecentage, y_pecentage = offsets_percentage
+    x_off=int(x_pecentage/100*width)
+    y_off=int(y_pecentage/100*height)
     return (x - x_off, x + width + x_off, y - y_off, y + height + y_off)
 
 def draw_text(coordinates, image_array, text, color, x_offset=0, y_offset=0,

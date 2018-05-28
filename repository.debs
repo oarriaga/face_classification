@@ -1,0 +1,39 @@
+#!/bin/bash
+if [ $# == 0 ]; then
+    INSTALL_PACKAGES=true
+else
+    INSTALL_PACKAGES=$1
+fi
+
+# your ROS distribution
+DISTRO=kinetic
+
+# create list of packages to install
+packagelist=(
+    python-pandas
+)
+
+pippackagelist=(
+    keras==2.1.6             #Keras is a high-level neural networks API to run  top of TensorFlow, CNTK, or Theano
+    statistics        #This module provides functions for calculating mathematical statistics of numeric in python
+)
+
+
+### Install debian packages listed in array above
+if [ $INSTALL_PACKAGES != false ]; then
+    sudo apt-get install -y ${packagelist[@]}
+    sudo pip install -y ${pippackagelist[@]}
+fi
+
+### install further repositories if repository.rosinstall file exists
+if [ -f repository.rosinstall ]; then
+    rosinstall .. /opt/ros/${DISTRO} repository.rosinstall
+
+    ### install dependencies of the previously cloned repositories
+    dependent_repositories=$(grep -r "local-name:" repository.rosinstall  | cut -d":" -f 2 | sed -r 's/\s+//g')
+    for i in $dependent_repositories
+    do
+        cd ../$i
+        if [ -f repository.debs ]; then ./repository.debs $INSTALL_PACKAGES ; fi
+    done
+fi

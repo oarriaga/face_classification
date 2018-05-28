@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+ 
+ <arg name="camera_type_is_depth" default="false"/>
+ <arg name="camera_name" default="camera"/>
+
+ <group if="$(arg camera_type_is_depth)" >
+	<include file="$(find openni2_launch)/launch/openni2.launch" >
+	    <arg name="camera" value="$(arg camera_name)"/>
+	    <arg name="publish_tf" value="false"/>
+	</include>
+ </group>
+
+ <group unless="$(arg camera_type_is_depth)" >
+	<node ns="$(arg camera_name)" name="rgb" pkg="usb_cam" type="usb_cam_node" output="screen" >
+		<param name="pixel_format" value="yuyv" />
+	</node>
+ </group>
+
+ <node pkg="face_classification" type="face_classification_node" name="face_classification_node" respawn="false" output="screen">
+     <param name="show_image" type="bool" value="true" />
+	 <param name="image_topic" value="$(arg camera_name)/rgb/image_raw/compressed" />
+     <param name="camera_delay" type="double" value="0.5" />
+     <param name="compressed"  type="bool" value="true" />
+     <param name="image_acquisition_rate" type="double" value="4" />
+     <param name="node_rate" type="double" value="60" />   
+ </node>
+
+</launch>

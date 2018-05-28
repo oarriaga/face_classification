@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+ 
+ <arg name="camera_name" default="head_camera"/>
+
+ <node pkg="face_classification" type="face_classification_node" name="face_classification_node" respawn="false" output="screen">
+     <param name="show_image" type="bool" value="true" />
+	 <param name="image_topic" value="$(arg camera_name)/rgb/image_raw/compressed" />
+     <param name="camera_delay" type="double" value="0.5" />
+     <param name="compressed"  type="bool" value="true" />
+     <param name="image_acquisition_rate" type="double" value="4" />
+     <param name="node_rate" type="double" value="60" />   
+ </node>
+
+</launch>
