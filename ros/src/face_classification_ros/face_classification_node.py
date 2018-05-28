@@ -22,7 +22,7 @@ from utils.preprocessor import preprocess_input
 from cv_bridge import CvBridge, CvBridgeError
 
 class BufferFrames(object):
-  
+
   def __init__(self):
 
     self.images = {}
@@ -34,12 +34,12 @@ class BufferFrames(object):
     self.counter = {}
 
   def add_frame(self,cv2_img,header,faces_classified,genders,emotions):
-    
+
     # changing the key it's possible to change the mode criterion
     key = str(genders.count("woman"))+ "_"+ str(genders.count("man"))
 
     if key in self.counter:
-      self.counter[key] = self.counter[key] + 1 
+      self.counter[key] = self.counter[key] + 1
     else:
       self.counter[key] = 1
 
@@ -68,17 +68,17 @@ class FaceClassifier(object):
     detection_model = rospy.get_param("~detection_model",'haarcascade_frontalface_default.xml')
     emotion_model = rospy.get_param("~emotion_model",'fer2013_mini_XCEPTION.102-0.66.hdf5')
     gender_model = rospy.get_param("~gender_model",'simple_CNN.81-0.96.hdf5')
-    
+
     # Dataset names
     emotion_dataset = rospy.get_param("~emotion_dataset", 'fer2013')
     gender_dataset = rospy.get_param("~gender_dataset", 'imdb')
-    
+
     # Image topic
     self.image_topic = rospy.get_param("~image_topic", "/camera/rgb/image_raw/compressed")
-    
+
     # delay before starting acquiring first image from the topic
     self.camera_delay = rospy.get_param("~camera_delay", 1)
-    
+
     # boolean do define if the image kind of msg is CompressedImage or Image
     if rospy.get_param("~compressed", True):
       self.image_type = CompressedImage
@@ -91,7 +91,7 @@ class FaceClassifier(object):
     # Rate of the image acquisition in buffer mode
     self.image_acquisition_rate = rospy.Rate(rospy.get_param("image_acquisition_rate",4))
 
-    # percentage in [width,height] that the bounding box will be amplied 
+    # percentage in [width,height] that the bounding box will be amplied
     self.gender_offsets_percentage = rospy.get_param("~gender_offsets_percentage",(20, 40))
     self.emotion_offsets_percentage = rospy.get_param("~emotion_offsets_percentage",(20, 40))
 
@@ -102,14 +102,14 @@ class FaceClassifier(object):
     detection_model_path =os.path.join(rospack.get_path('face_classification'),'trained_models','detection_models',detection_model)
     emotion_model_path = os.path.join(rospack.get_path('face_classification'),'trained_models','emotion_models',emotion_model)
     gender_model_path = os.path.join(rospack.get_path('face_classification'),'trained_models','gender_models', gender_model)
-    
+
     #labels of each dataset
     self.emotion_labels = get_labels(emotion_dataset)
     self.gender_labels = get_labels(gender_dataset)
 
 
     self.bridge = CvBridge()
-    
+
     # Store last image to process here
     self.last_image = None
 
@@ -210,10 +210,10 @@ class FaceClassifier(object):
       self.activate_mode = True
       self.mode = "continuous"
       return True
- 
 
 
-    
+
+
 
   def pub_msgs(self,cv2_image,input_image_header,faces_coordinates,faces_genders,faces_emotions,image_format="passthrough"):
     '''
@@ -232,7 +232,7 @@ class FaceClassifier(object):
     faces_array = FaceClassificationArray()
     faces_array.header.stamp = time_stamp
     faces_array.image_input_header = input_image_header
-    
+
 
     # for each face create the msg and add it to the face_array
     for idx_face, face_coordinates in enumerate(faces_coordinates):
@@ -248,7 +248,7 @@ class FaceClassifier(object):
       new_face.bounding_box= RegionOfInterest()
       new_face.bounding_box.x_offset,new_face.bounding_box.y_offset,new_face.bounding_box.width,new_face.bounding_box.height=face_coordinates
       new_face.bounding_box.do_rectify=False
-      
+
       #add the face to the array
       faces_array.faces.append(new_face)
 
@@ -265,19 +265,19 @@ class FaceClassifier(object):
 
       #publish the Image msg with the output
       self.publisher_image.publish(msg)
-    
+
     #if there is some node subscribing the topic with output image compressed, publish it
-    if self.publisher_image_compressed.get_num_connections() > 0:    
-        
+    if self.publisher_image_compressed.get_num_connections() > 0:
+
       msg  = CompressedImage()
       msg.header.stamp = time_stamp
       msg.format = "jpeg"
       msg.data = np.array(cv2.imencode('.jpg', cv2_image)[1]).tostring()
-      
+
       #publish the ImageCompressed msg with the output
       self.publisher_image_compressed.publish(msg)
 
-    return  
+    return
 
 
   def convert_img_to_cv2(self, image_msg):
@@ -314,7 +314,7 @@ class FaceClassifier(object):
     #getting a list of detected faces in the gray image
     faces = detect_faces(self.face_detection, gray_image)
 
-    # arrays with all the faces detected and classified (gender and emotion) 
+    # arrays with all the faces detected and classified (gender and emotion)
     genders=[]
     emotions=[]
     faces_classified=[]
@@ -368,7 +368,7 @@ class FaceClassifier(object):
       emotions.append(emotion_text)
 
     cv2_img = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
-    
+
     if self.show_image:
       cv2.imshow('window_frame', cv2_img)
       cv2.waitKey(3)
@@ -384,12 +384,12 @@ class FaceClassifier(object):
         self.pub_msgs(cv2_img,header,faces_classified,genders,emotions)
         self.buffer_frames=None
         rospy.loginfo('%s mode activated' % self.mode)
-    
+
     else: #self.mode == "continuous"
 
       self.pub_msgs(cv2_img,self.last_image.header,faces_classified,genders,emotions)
 
-    
+
     self.is_new_image=False
 
   def run_process(self):
@@ -398,7 +398,7 @@ class FaceClassifier(object):
     while not rospy.is_shutdown():
       # if it's not in idle mode
       if not self.mode=="idle":
-        
+
         # if it's the first time that the the node is activated subscribe the topic and wait till the camera image stabilize
         if self.activate_mode:
           rospy.loginfo('%s mode activated' % self.mode)
@@ -423,10 +423,10 @@ def main():
   #Init node
   rospy.init_node('face_classifier', log_level=rospy.INFO)
   rospy.loginfo('Ready to receive requests or messages')
-  
-  mbot_classifier = FaceClassifier() 
+
+  mbot_classifier = FaceClassifier()
   mbot_classifier.run_process()
-  
+
   #Shutting down
   rospy.loginfo("Shutting down")
   if mbot_classifier.show_image:
