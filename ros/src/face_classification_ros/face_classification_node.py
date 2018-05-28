@@ -214,7 +214,7 @@ class FaceClassifier(object):
 
 
 
-  def pub_msgs(self,cv2_image,input_image_header,faces_coordinates,faces_genders,faces_emotions,image_format="passthrough"):
+  def pub_msgs(self,cv2_image,input_image_header,faces_coordinates,faces_genders,faces_emotions,image_format="bgr8"):
     '''
     Create the messages and publish it
       Arguments:
@@ -257,7 +257,7 @@ class FaceClassifier(object):
     #if there is some node subscribing the topic with output image, publish it
     if self.publisher_image.get_num_connections() > 0:
       try:
-        msg = self.bridge.cv2_to_imgmsg(cv2_image, image_format)
+        msg = self.bridge.cv2_to_imgmsg(cv2_image, encoding=image_format)
         msg.header.stamp = time_stamp
       except CvBridgeError as e:
         rospy.logerr("Error on converting image for publishing: " + str(e) + " (Wrong image_format)")
