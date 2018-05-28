@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from statistics import mode
 import operator
 import rospy
 import rospkg

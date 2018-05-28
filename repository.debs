@@ -15,7 +15,6 @@ packagelist=(
 
 pippackagelist=(
     keras==2.1.6             #Keras is a high-level neural networks API to run  top of TensorFlow, CNTK, or Theano
-    statistics        #This module provides functions for calculating mathematical statistics of numeric in python
 )
 
 
