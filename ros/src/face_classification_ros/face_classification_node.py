@@ -165,6 +165,10 @@ class FaceClassifier(object):
       (if is not already in buffer or continuous mode)
     '''
 
+    if req.buffer_size <= 0:
+      rospy.logerr('Buffer size must be larger than zero')
+      return False
+
     if self.mode == "continuous":
       rospy.logwarn('Node working on continuous mode, request for buffer mode not available')
       return False
