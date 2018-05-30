@@ -236,7 +236,6 @@ class FaceClassifier(object):
     faces_array.header.stamp = time_stamp
     faces_array.image_input_header = input_image_header
 
-
     # for each face create the msg and add it to the face_array
     for idx_face, face_coordinates in enumerate(faces_coordinates):
       new_face = FaceClassification()
@@ -392,7 +391,6 @@ class FaceClassifier(object):
 
       self.pub_msgs(cv2_img,self.last_image.header,faces_classified,genders,emotions)
 
-
     self.is_new_image=False
 
   def run_process(self):
@@ -401,7 +399,6 @@ class FaceClassifier(object):
     while not rospy.is_shutdown():
       # if it's not in idle mode
       if not self.mode=="idle":
-
         # if it's the first time that the the node is activated subscribe the topic and wait till the camera image stabilize
         if self.activate_mode:
           rospy.loginfo('%s mode activated' % self.mode)
