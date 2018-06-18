@@ -91,8 +91,8 @@ class FaceClassifier(object):
     self.image_acquisition_rate = rospy.Rate(rospy.get_param("image_acquisition_rate",4))
 
     # percentage in [width,height] that the bounding box will be amplied
-    self.gender_offsets_percentage = rospy.get_param("~gender_offsets_percentage",(20, 40))
-    self.emotion_offsets_percentage = rospy.get_param("~emotion_offsets_percentage",(20, 40))
+    self.gender_offsets = (rospy.get_param("~gender_offset_x",30),rospy.get_param("~gender_offset_y",60))
+    self.emotion_offsets= (rospy.get_param("~emotion_offset_x",20),rospy.get_param("~gender_offset_y",40))
 
     # get an instance of RosPack with the default search paths
     rospack = rospkg.RosPack()
@@ -327,10 +327,10 @@ class FaceClassifier(object):
       #create a bigger bounding box where:
       #   (x1,y1) is the top left corner
       #   (x2,y2) is the bottom right corner
-      x1, x2, y1, y2 = apply_offsets(face_coordinates, self.gender_offsets_percentage)
+      x1, x2, y1, y2 = apply_offsets(face_coordinates, self.gender_offsets)
       rgb_face = rgb_image[y1:y2, x1:x2]
 
-      x1, x2, y1, y2 = apply_offsets(face_coordinates, self.gender_offsets_percentage)
+      x1, x2, y1, y2 = apply_offsets(face_coordinates, self.emotion_offsets)
       gray_face = gray_image[y1:y2, x1:x2]
 
       # Resize the images to classify

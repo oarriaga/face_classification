@@ -9,7 +9,11 @@
      <param name="camera_delay" type="double" value="0.5" />
      <param name="compressed"  type="bool" value="true" />
      <param name="image_acquisition_rate" type="double" value="4" />
-     <param name="node_rate" type="double" value="60" />   
+     <param name="node_rate" type="double" value="60" /> 
+     <param name="gender_offset_x"  value="30"/>
+     <param name="gender_offset_y"  value="60"/>
+     <param name="emotion_offset_x" value="20"/>
+     <param name="emotion_offset_y" value="40"/> 
  </node>
 
 </launch>
