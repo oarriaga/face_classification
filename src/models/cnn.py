@@ -10,6 +10,7 @@ from keras.layers import SeparableConv2D
 from keras import layers
 from keras.regularizers import l2
 
+
 def simple_CNN(input_shape, num_classes):
 
     model = Sequential()
@@ -48,10 +49,12 @@ def simple_CNN(input_shape, num_classes):
 
     model.add(Convolution2D(filters=256, kernel_size=(3, 3), padding='same'))
     model.add(BatchNormalization())
-    model.add(Convolution2D(filters=num_classes, kernel_size=(3, 3), padding='same'))
+    model.add(Convolution2D(
+        filters=num_classes, kernel_size=(3, 3), padding='same'))
     model.add(GlobalAveragePooling2D())
-    model.add(Activation('softmax',name='predictions'))
+    model.add(Activation('softmax', name='predictions'))
     return model
+
 
 def simpler_CNN(input_shape, num_classes):
 
@@ -100,9 +103,10 @@ def simpler_CNN(input_shape, num_classes):
                             strides=(2, 2), padding='same'))
 
     model.add(Flatten())
-    #model.add(GlobalAveragePooling2D())
-    model.add(Activation('softmax',name='predictions'))
+    # model.add(GlobalAveragePooling2D())
+    model.add(Activation('softmax', name='predictions'))
     return model
+
 
 def tiny_XCEPTION(input_shape, num_classes, l2_regularization=0.01):
     regularization = l2(l2_regularization)
@@ -110,11 +114,11 @@ def tiny_XCEPTION(input_shape, num_classes, l2_regularization=0.01):
     # base
     img_input = Input(input_shape)
     x = Conv2D(5, (3, 3), strides=(1, 1), kernel_regularizer=regularization,
-                                            use_bias=False)(img_input)
+               use_bias=False)(img_input)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
     x = Conv2D(5, (3, 3), strides=(1, 1), kernel_regularizer=regularization,
-                                            use_bias=False)(x)
+               use_bias=False)(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
@@ -191,10 +195,10 @@ def tiny_XCEPTION(input_shape, num_classes, l2_regularization=0.01):
     x = layers.add([x, residual])
 
     x = Conv2D(num_classes, (3, 3),
-            #kernel_regularizer=regularization,
-            padding='same')(x)
+               # kernel_regularizer=regularization,
+               padding='same')(x)
     x = GlobalAveragePooling2D()(x)
-    output = Activation('softmax',name='predictions')(x)
+    output = Activation('softmax', name='predictions')(x)
 
     model = Model(img_input, output)
     return model
@@ -206,11 +210,11 @@ def mini_XCEPTION(input_shape, num_classes, l2_regularization=0.01):
     # base
     img_input = Input(input_shape)
     x = Conv2D(8, (3, 3), strides=(1, 1), kernel_regularizer=regularization,
-                                            use_bias=False)(img_input)
+               use_bias=False)(img_input)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
     x = Conv2D(8, (3, 3), strides=(1, 1), kernel_regularizer=regularization,
-                                            use_bias=False)(x)
+               use_bias=False)(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
@@ -287,13 +291,14 @@ def mini_XCEPTION(input_shape, num_classes, l2_regularization=0.01):
     x = layers.add([x, residual])
 
     x = Conv2D(num_classes, (3, 3),
-            #kernel_regularizer=regularization,
-            padding='same')(x)
+               # kernel_regularizer=regularization,
+               padding='same')(x)
     x = GlobalAveragePooling2D()(x)
-    output = Activation('softmax',name='predictions')(x)
+    output = Activation('softmax', name='predictions')(x)
 
     model = Model(img_input, output)
     return model
+
 
 def big_XCEPTION(input_shape, num_classes):
     img_input = Input(input_shape)
@@ -331,10 +336,10 @@ def big_XCEPTION(input_shape, num_classes):
     x = MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
     x = layers.add([x, residual])
     x = Conv2D(num_classes, (3, 3),
-            #kernel_regularizer=regularization,
-            padding='same')(x)
+               # kernel_regularizer=regularization,
+               padding='same')(x)
     x = GlobalAveragePooling2D()(x)
-    output = Activation('softmax',name='predictions')(x)
+    output = Activation('softmax', name='predictions')(x)
 
     model = Model(img_input, output)
     return model
@@ -343,11 +348,11 @@ def big_XCEPTION(input_shape, num_classes):
 if __name__ == "__main__":
     input_shape = (64, 64, 1)
     num_classes = 7
-    #model = tiny_XCEPTION(input_shape, num_classes)
-    #model.summary()
-    #model = mini_XCEPTION(input_shape, num_classes)
-    #model.summary()
-    #model = big_XCEPTION(input_shape, num_classes)
-    #model.summary()
+    # model = tiny_XCEPTION(input_shape, num_classes)
+    # model.summary()
+    # model = mini_XCEPTION(input_shape, num_classes)
+    # model.summary()
+    # model = big_XCEPTION(input_shape, num_classes)
+    # model.summary()
     model = simple_CNN((48, 48, 1), num_classes)
     model.summary()
