@@ -11,6 +11,7 @@ from utils.grad_cam import calculate_guided_gradient_CAM
 from utils.inference import detect_faces
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
+from utils.inference import make_face_coordinates
 from utils.preprocessor import preprocess_input
 from utils.inference import draw_bounding_box
 from utils.datasets import get_class_to_arg
@@ -39,9 +40,8 @@ register_gradient()
 guided_model = modify_backprop(model, 'GuidedBackProp', task)
 saliency_function = compile_saliency_function(guided_model, 'conv2d_7')
 
-# parameters for loading data and images 
-detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
-face_detection = load_detection_model(detection_model_path)
+# parameters for loading data and images
+face_detection = load_detection_model()
 color = (0, 255, 0)
 
 # getting input model shapes for inference
@@ -57,10 +57,11 @@ while True:
     bgr_image = video_capture.read()[1]
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-    faces = detect_faces(face_detection, gray_image)
+    detected_faces, score, idx = detect_faces(face_detection, gray_image)
 
-    for face_coordinates in faces:
+    for detected_face in detected_faces:
 
+        face_coordinates = make_face_coordinates(detected_face)
         x1, x2, y1, y2 = apply_offsets(face_coordinates, offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:

@@ -6,16 +6,17 @@ import numpy as np
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
+from utils.inference import load_detection_model
+from utils.inference import make_face_coordinates
 from utils.inference import draw_text
 from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
-from utils.inference import load_detection_model
+
 from utils.inference import load_image
 from utils.preprocessor import preprocess_input
 
 # parameters for loading data and images
 image_path = sys.argv[1]
-detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 gender_model_path = '../trained_models/gender_models/simple_CNN.81-0.96.hdf5'
 emotion_labels = get_labels('fer2013')
@@ -29,7 +30,7 @@ emotion_offsets = (20, 40)
 emotion_offsets = (0, 0)
 
 # loading models
-face_detection = load_detection_model(detection_model_path)
+face_detection = load_detection_model()
 emotion_classifier = load_model(emotion_model_path, compile=False)
 gender_classifier = load_model(gender_model_path, compile=False)
 
@@ -43,8 +44,12 @@ gray_image = load_image(image_path, grayscale=True)
 gray_image = np.squeeze(gray_image)
 gray_image = gray_image.astype('uint8')
 
-faces = detect_faces(face_detection, gray_image)
-for face_coordinates in faces:
+detected_faces, score, idx = detect_faces(face_detection, gray_image)
+
+for detected_face in detected_faces:
+
+    face_coordinates = make_face_coordinates(detected_face)
+
     x1, x2, y1, y2 = apply_offsets(face_coordinates, gender_offsets)
     rgb_face = rgb_image[y1:y2, x1:x2]
 

@@ -10,10 +10,10 @@ from utils.inference import draw_text
 from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
+from utils.inference import make_face_coordinates
 from utils.preprocessor import preprocess_input
 
 # parameters for loading data and images
-detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 emotion_labels = get_labels('fer2013')
 
@@ -22,7 +22,7 @@ frame_window = 10
 emotion_offsets = (20, 40)
 
 # loading models
-face_detection = load_detection_model(detection_model_path)
+face_detection = load_detection_model()
 emotion_classifier = load_model(emotion_model_path, compile=False)
 
 # getting input model shapes for inference
@@ -38,10 +38,11 @@ while True:
     bgr_image = video_capture.read()[1]
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-    faces = detect_faces(face_detection, gray_image)
+    detected_faces, score, idx = detect_faces(face_detection, gray_image)
 
-    for face_coordinates in faces:
+    for detected_face in detected_faces:
 
+        face_coordinates = make_face_coordinates(detected_face)
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
