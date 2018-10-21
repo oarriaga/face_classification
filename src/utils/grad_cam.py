@@ -2,11 +2,11 @@ import cv2
 import h5py
 import keras
 import keras.backend as K
+import numpy as np
+import tensorflow as tf
 from keras.layers.core import Lambda
 from keras.models import Sequential
 from keras.models import load_model
-import numpy as np
-import tensorflow as tf
 from tensorflow.python.framework import ops
 
 from .preprocessor import preprocess_input
@@ -101,6 +101,7 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
+
 def compile_gradient_function(input_model, category_index, layer_name):
     model = Sequential()
     model.add(input_model)
@@ -108,27 +109,28 @@ def compile_gradient_function(input_model, category_index, layer_name):
     num_classes = model.output_shape[1]
     target_layer = lambda x: target_category_loss(x, category_index, num_classes)
     model.add(Lambda(target_layer,
-                     output_shape = target_category_loss_output_shape))
+                     output_shape=target_category_loss_output_shape))
 
     loss = K.sum(model.layers[-1].output)
     conv_output = model.layers[0].get_layer(layer_name).output
     gradients = normalize(K.gradients(loss, conv_output)[0])
     gradient_function = K.function([model.layers[0].input, K.learning_phase()],
-                                                    [conv_output, gradients])
+                                   [conv_output, gradients])
     return gradient_function
+
 
 def calculate_gradient_weighted_CAM(gradient_function, image):
     output, evaluated_gradients = gradient_function([image, False])
     output, evaluated_gradients = output[0, :], evaluated_gradients[0, :, :, :]
-    weights = np.mean(evaluated_gradients, axis = (0, 1))
-    CAM = np.ones(output.shape[0 : 2], dtype=np.float32)
+    weights = np.mean(evaluated_gradients, axis=(0, 1))
+    CAM = np.ones(output.shape[0: 2], dtype=np.float32)
     for weight_arg, weight in enumerate(weights):
         CAM = CAM + (weight * output[:, :, weight_arg])
     CAM = cv2.resize(CAM, (64, 64))
     CAM = np.maximum(CAM, 0)
     heatmap = CAM / np.max(CAM)
 
-    #Return to BGR [0..255] from the preprocessed image
+    # Return to BGR [0..255] from the preprocessed image
     image = image[0, :]
     image = image - np.min(image)
     image = np.minimum(image, 255)
@@ -138,16 +140,18 @@ def calculate_gradient_weighted_CAM(gradient_function, image):
     CAM = 255 * CAM / np.max(CAM)
     return np.uint8(CAM), heatmap
 
+
 def calculate_guided_gradient_CAM(preprocessed_input, gradient_function, saliency_function):
     CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
     saliency = saliency_function([preprocessed_input, 0])
     gradCAM = saliency[0] * heatmap[..., np.newaxis]
-    #return deprocess_image(gradCAM)
+    # return deprocess_image(gradCAM)
     return deprocess_image(saliency[0])
-    #return saliency[0]
+    # return saliency[0]
+
 
 def calculate_guided_gradient_CAM_v2(preprocessed_input, gradient_function,
-                                    saliency_function, target_size=(128, 128)):
+                                     saliency_function, target_size=(128, 128)):
     CAM, heatmap = calculate_gradient_weighted_CAM(gradient_function, preprocessed_input)
     heatmap = np.squeeze(heatmap)
     heatmap = cv2.resize(heatmap.astype('uint8'), target_size)
@@ -155,16 +159,17 @@ def calculate_guided_gradient_CAM_v2(preprocessed_input, gradient_function,
     saliency = np.squeeze(saliency[0])
     saliency = cv2.resize(saliency.astype('uint8'), target_size)
     gradCAM = saliency * heatmap
-    gradCAM =  deprocess_image(gradCAM)
+    gradCAM = deprocess_image(gradCAM)
     return np.expand_dims(gradCAM, -1)
 
 
 if __name__ == '__main__':
     import pickle
-    faces = pickle.load(open('faces.pkl','rb'))
+
+    faces = pickle.load(open('faces.pkl', 'rb'))
     face = faces[0]
     model_filename = '../../trained_models/emotion_models/mini_XCEPTION.523-0.65.hdf5'
-    #reset_optimizer_weights(model_filename)
+    # reset_optimizer_weights(model_filename)
     model = load_model(model_filename)
 
     preprocessed_input = load_image(face)
@@ -175,8 +180,6 @@ if __name__ == '__main__':
     guided_model = modify_backprop(model, 'GuidedBackProp')
     saliency_function = compile_saliency_function(guided_model)
     guided_gradCAM = calculate_guided_gradient_CAM(preprocessed_input,
-                                gradient_function, saliency_function)
+                                                   gradient_function, saliency_function)
 
     cv2.imwrite('guided_gradCAM.jpg', guided_gradCAM)
-
-

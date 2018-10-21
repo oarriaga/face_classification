@@ -1,19 +1,17 @@
-import sys
-
 import cv2
 import numpy as np
 from keras.models import load_model
+from utils.datasets import get_class_to_arg
+from utils.grad_cam import calculate_guided_gradient_CAM
 from utils.grad_cam import compile_gradient_function
 from utils.grad_cam import compile_saliency_function
-from utils.grad_cam import register_gradient
 from utils.grad_cam import modify_backprop
-from utils.grad_cam import calculate_guided_gradient_CAM
-from utils.inference import detect_faces
+from utils.grad_cam import register_gradient
 from utils.inference import apply_offsets
+from utils.inference import detect_faces
+from utils.inference import draw_bounding_box
 from utils.inference import load_detection_model
 from utils.preprocessor import preprocess_input
-from utils.inference import draw_bounding_box
-from utils.datasets import get_class_to_arg
 
 # getting the correct model given the input
 # task = sys.argv[1]
@@ -72,11 +70,11 @@ while True:
         gray_face = np.expand_dims(gray_face, 0)
         gray_face = np.expand_dims(gray_face, -1)
         guided_gradCAM = calculate_guided_gradient_CAM(gray_face,
-                            gradient_function, saliency_function)
-        guided_gradCAM = cv2.resize(guided_gradCAM, (x2-x1, y2-y1))
+                                                       gradient_function, saliency_function)
+        guided_gradCAM = cv2.resize(guided_gradCAM, (x2 - x1, y2 - y1))
         try:
             rgb_guided_gradCAM = np.repeat(guided_gradCAM[:, :, np.newaxis],
-                                                                3, axis=2)
+                                           3, axis=2)
             rgb_image[y1:y2, x1:x2, :] = rgb_guided_gradCAM
         except:
             continue
@@ -88,5 +86,3 @@ while True:
         continue
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
-
