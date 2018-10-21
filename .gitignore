@@ -6,3 +6,4 @@ src/train_emotion_classifier_transfer_learning.py
 *.log
 
 \.idea/
+venv
