@@ -1,21 +1,22 @@
-from scipy.io import loadmat
-import pandas as pd
-import numpy as np
-from random import shuffle
 import os
+from random import shuffle
+
 import cv2
+import numpy as np
+import pandas as pd
+from scipy.io import loadmat
 
 
 class DataManager(object):
     """Class for loading fer2013 emotion classification dataset or
         imdb gender classification dataset."""
-    def __init__(self, dataset_name='imdb',
-                 dataset_path=None, image_size=(48, 48)):
+
+    def __init__(self, dataset_name='imdb', dataset_path=None, image_size=(48, 48)):
 
         self.dataset_name = dataset_name
         self.dataset_path = dataset_path
         self.image_size = image_size
-        if self.dataset_path is not None:
+        if self.dataset_path != None:
             self.dataset_path = dataset_path
         elif self.dataset_name == 'imdb':
             self.dataset_path = '../datasets/imdb_crop/imdb.mat'
@@ -24,8 +25,7 @@ class DataManager(object):
         elif self.dataset_name == 'KDEF':
             self.dataset_path = '../datasets/KDEF/'
         else:
-            raise Exception(
-                    'Incorrect dataset name, please input imdb or fer2013')
+            raise Exception('Incorrect dataset name, please input imdb or fer2013')
 
     def get_data(self):
         if self.dataset_name == 'imdb':
@@ -91,8 +91,7 @@ class DataManager(object):
             faces[file_arg] = image_array
             file_basename = os.path.basename(file_path)
             file_emotion = file_basename[4:6]
-            # there are two file names in the dataset
-            # that don't match the given classes
+            # there are two file names in the dataset that don't match the given classes
             try:
                 emotion_arg = class_to_arg[file_emotion]
             except:
@@ -128,7 +127,7 @@ def get_class_to_arg(dataset_name='fer2013'):
 
 def split_imdb_data(ground_truth_data, validation_split=.2, do_shuffle=False):
     ground_truth_keys = sorted(ground_truth_data.keys())
-    if do_shuffle is not False:
+    if do_shuffle == True:
         shuffle(ground_truth_keys)
     training_split = 1 - validation_split
     num_train = int(training_split * len(ground_truth_keys))
@@ -139,7 +138,7 @@ def split_imdb_data(ground_truth_data, validation_split=.2, do_shuffle=False):
 
 def split_data(x, y, validation_split=.2):
     num_samples = len(x)
-    num_train_samples = int((1 - validation_split)*num_samples)
+    num_train_samples = int((1 - validation_split) * num_samples)
     train_x = x[:num_train_samples]
     train_y = y[:num_train_samples]
     val_x = x[num_train_samples:]

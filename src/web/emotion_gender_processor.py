@@ -1,22 +1,19 @@
-import os
-import sys
 import logging
+import os
 
 import cv2
-from keras.models import load_model
 import numpy as np
-
+from keras.models import load_model
 from utils.datasets import get_labels
-from utils.inference import detect_faces
-from utils.inference import draw_text
-from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
+from utils.inference import detect_faces
+from utils.inference import draw_bounding_box
+from utils.inference import draw_text
 from utils.inference import load_detection_model
-from utils.inference import load_image
 from utils.preprocessor import preprocess_input
 
-def process_image(image):
 
+def process_image(image):
     try:
         # parameters for loading data and images
         detection_model_path = './trained_models/detection_models/haarcascade_frontalface_default.xml'
