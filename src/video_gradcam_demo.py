@@ -62,7 +62,7 @@ while True:
         x1, x2, y1, y2 = apply_offsets(face_coordinates, offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
-            gray_face = cv2.resize(gray_face, (target_size))
+            gray_face = cv2.resize(gray_face, target_size)
         except:
             continue
 

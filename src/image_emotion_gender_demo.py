@@ -52,8 +52,8 @@ for face_coordinates in faces:
     gray_face = gray_image[y1:y2, x1:x2]
 
     try:
-        rgb_face = cv2.resize(rgb_face, (gender_target_size))
-        gray_face = cv2.resize(gray_face, (emotion_target_size))
+        rgb_face = cv2.resize(rgb_face, gender_target_size)
+        gray_face = cv2.resize(gray_face, emotion_target_size)
     except:
         continue
 

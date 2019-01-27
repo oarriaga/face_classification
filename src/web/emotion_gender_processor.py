@@ -22,12 +22,9 @@ def process_image(image):
         gender_model_path = './trained_models/gender_models/simple_CNN.81-0.96.hdf5'
         emotion_labels = get_labels('fer2013')
         gender_labels = get_labels('imdb')
-        font = cv2.FONT_HERSHEY_SIMPLEX
 
         # hyper-parameters for bounding boxes shape
-        gender_offsets = (30, 60)
         gender_offsets = (10, 10)
-        emotion_offsets = (20, 40)
         emotion_offsets = (0, 0)
 
         # loading models

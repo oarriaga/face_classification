@@ -56,8 +56,8 @@ while True:
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
-            rgb_face = cv2.resize(rgb_face, (gender_target_size))
-            gray_face = cv2.resize(gray_face, (emotion_target_size))
+            rgb_face = cv2.resize(rgb_face, gender_target_size)
+            gray_face = cv2.resize(gray_face, emotion_target_size)
         except:
             continue
         gray_face = preprocess_input(gray_face, False)
