@@ -3,14 +3,15 @@ import sys
 import cv2
 import numpy as np
 from keras.models import load_model
-from utils.datasets import get_labels
-from utils.inference import apply_offsets
-from utils.inference import detect_faces
-from utils.inference import draw_bounding_box
-from utils.inference import draw_text
-from utils.inference import load_detection_model
-from utils.inference import load_image
-from utils.preprocessor import preprocess_input
+
+from src.utils.datasets import get_labels
+from src.utils.inference import apply_offsets
+from src.utils.inference import detect_faces
+from src.utils.inference import draw_bounding_box
+from src.utils.inference import draw_text
+from src.utils.inference import load_detection_model
+from src.utils.inference import load_image
+from src.utils.preprocessor import preprocess_input
 
 # parameters for loading data and images
 image_path = sys.argv[1]
