@@ -3,17 +3,11 @@ import sys
 import cv2
 import numpy as np
 from keras.models import load_model
+
 from utils.datasets import get_labels
-from utils.grad_cam import calculate_guided_gradient_CAM
-from utils.grad_cam import compile_gradient_function
-from utils.grad_cam import compile_saliency_function
-from utils.grad_cam import modify_backprop
-from utils.grad_cam import register_gradient
-from utils.inference import apply_offsets
-from utils.inference import detect_faces
-from utils.inference import draw_bounding_box
-from utils.inference import load_detection_model
-from utils.inference import load_image
+from utils.grad_cam import (compile_gradient_function, register_gradient, modify_backprop, compile_saliency_function,
+                            calculate_guided_gradient_CAM)
+from utils.inference import load_detection_model, load_image, detect_faces, apply_offsets, draw_bounding_box
 from utils.preprocessor import preprocess_input
 
 # parameters
@@ -56,7 +50,7 @@ for face_coordinates in faces:
 
     # processing input
     try:
-        gray_face = cv2.resize(gray_face, (target_size))
+        gray_face = cv2.resize(gray_face, target_size)
     except:
         continue
     gray_face = preprocess_input(gray_face, True)

@@ -4,13 +4,9 @@ import cv2
 import numpy as np
 from keras.models import load_model
 
-from src.utils.datasets import get_labels
-from src.utils.inference import apply_offsets
-from src.utils.inference import detect_faces
-from src.utils.inference import draw_bounding_box
-from src.utils.inference import draw_text
-from src.utils.inference import load_detection_model
-from src.utils.preprocessor import preprocess_input
+from utils.datasets import get_labels
+from utils.inference import load_detection_model, detect_faces, apply_offsets, draw_bounding_box, draw_text
+from utils.preprocessor import preprocess_input
 
 # parameters for loading data and images
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
