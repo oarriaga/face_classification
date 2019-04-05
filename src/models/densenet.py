@@ -4,18 +4,19 @@ from keras import layers
 from keras import backend
 from keras import models
 
-from ..blocks import dense_block
-from ..blocks import transition_block
+from .blocks import dense_block
+from .blocks import transition_block
 
 
-def DenseNet(blocks,
-             include_top=True,
-             weights='imagenet',
-             input_tensor=None,
-             input_shape=None,
-             pooling=None,
-             classes=1000,
-             **kwargs):
+def build_densenet(
+        blocks,
+        include_top=True,
+        weights='imagenet',
+        input_tensor=None,
+        input_shape=None,
+        pooling=None,
+        classes=1000,
+        **kwargs):
     """Instantiates the DenseNet architecture.
     Optionally loads weights pre-trained on ImageNet.
     Note that the data format convention used by the model is

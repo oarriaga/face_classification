@@ -4,7 +4,7 @@ from keras.layers import GlobalAveragePooling2D
 from keras.models import Model
 from keras.layers import Input
 from keras.regularizers import l2
-from ..blocks import xception_block
+from .blocks import xception_block
 
 
 def build_xception(input_shape, num_classes,
