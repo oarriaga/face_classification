@@ -15,7 +15,7 @@ from keras.regularizers import l2
 
 
 def dense_block(x, blocks, name):
-    """A dense block.
+    """DenseNet core block.
     # Arguments
         x: input tensor.
         blocks: integer, the number of building blocks.
@@ -29,7 +29,7 @@ def dense_block(x, blocks, name):
 
 
 def conv_block(x, growth_rate, name):
-    """A building block for a dense block.
+    """Standard convolution block used in DenseNets.
     # Arguments
         x: input tensor.
         growth_rate: float, growth rate at dense layers.
@@ -57,7 +57,7 @@ def conv_block(x, growth_rate, name):
 
 
 def transition_block(x, reduction, name):
-    """A transition block.
+    """Transition block used for DenseNets.
     # Arguments
         x: input tensor.
         reduction: float, compression rate at transition layers.
@@ -77,7 +77,7 @@ def transition_block(x, reduction, name):
 
 
 def xception_block(input_tensor, num_kernels, l2_reg=0.01):
-    """ Xception block.
+    """Xception core block.
     # Arguments
         input_tenso: Keras tensor.
         num_kernels: Int. Number of convolutional kernels in block.
