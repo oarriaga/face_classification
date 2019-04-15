@@ -8,17 +8,20 @@ from .blocks import xception_block
 
 
 def build_xception(input_shape, num_classes,
-                   kernels_per_module, l2_reg=0.01):
+                   kernels_per_block, l2_reg=0.01):
 
-    inputs = Input(input_shape)
-    x = Conv2D(32, 3, kernel_regularizer=l2(l2_reg), use_bias=False)(inputs)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = Conv2D(64, 3, kernel_regularizer=l2(l2_reg), use_bias=False)(x)
+    inputs = Input(input_shape, name='inputs')
+    x = Conv2D(32, 3, kernel_regularizer=l2(l2_reg),
+               use_bias=False, padding='same')(inputs)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
-    for num_kernels in kernels_per_module:
+    x = Conv2D(64, 3, kernel_regularizer=l2(l2_reg),
+               use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+
+    for num_kernels in kernels_per_block:
         x = xception_block(x, num_kernels, l2_reg)
 
     x = Conv2D(num_classes, 3, kernel_regularizer=l2(l2_reg),
@@ -27,6 +30,6 @@ def build_xception(input_shape, num_classes,
     x = GlobalAveragePooling2D()(x)
     output = Activation('softmax', name='predictions')(x)
 
-    model_name = ''.join(['Xception', str(len(kernels_per_module))])
+    model_name = ''.join(['Xception', str(len(kernels_per_block))])
     model = Model(inputs, output, name=model_name)
     return model
