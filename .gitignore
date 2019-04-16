@@ -1,6 +1,3 @@
 *.pyc
-src/visualizations.py
 *.pkl
-src/utils/get_gender_faces.py
-src/train_emotion_classifier_transfer_learning.py
 *.log
