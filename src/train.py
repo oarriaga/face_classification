@@ -61,14 +61,13 @@ else:
 # loading datasets
 data_managers, datasets = [], []
 input_shape = (args.image_size, args.image_size, 1)
-for split in ['train', 'val']:
+for split in ['train', 'val', 'test']:
     data_manager = DataManager(split, input_shape[:2])
     data_managers.append(data_manager)
-    datasets.append(data_manager.load_data())
+    faces, labels = data_managers.load_data()
+    datasets.append([faces / 255.0, labels])
 
 # data generator and augmentations
-train_data = (datasets[0][0] / 255., datasets[0][1])
-val_data = (datasets[1][0] / 255., datasets[1][1])
 data_augmentator = ImageDataGenerator(
     rotation_range=30,
     width_shift_range=0.1,
@@ -105,6 +104,7 @@ with open(os.path.join(save_path, 'model_summary.txt'), 'w') as filer:
     model.summary(print_fn=lambda x: filer.write(x + '\n'))
 
 # training model
+train_data, val_data, test_data = datasets
 model.fit_generator(
     data_augmentator.flow(train_data[0], train_data[1], args.batch_size),
     steps_per_epoch=len(train_data[0]) / args.batch_size,
@@ -114,3 +114,10 @@ model.fit_generator(
     validation_data=val_data,
     use_multiprocessing=True,
     workers=4)
+
+# writing evaluations
+evaluations = model.evaluate(test_data[0], test_data[1])
+with open(os.path.join(save_path, 'evaluation.txt'), 'w') as filer:
+    for evaluation in evaluations:
+        filer.write("%s\n" % evaluation)
+print('evaluations:', evaluations)
