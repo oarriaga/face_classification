@@ -2,6 +2,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import argparse
+from datetime import datetime
 import json
 
 from keras.callbacks import CSVLogger
@@ -27,17 +28,22 @@ parser.add_argument('--learning_rate', default=0.002, type=float,
                     help='Initial learning rate for Nadam')
 parser.add_argument('--image_size', default=128, type=int,
                     help='Size of the side of a square image e.g. 64')
-parser.add_argument('--stop_patience', default=12, type=int,
+parser.add_argument('--stop_patience', default=9, type=int,
                     help='Number of epochs before doing early stopping')
-parser.add_argument('--plateau_patience', default=5, type=int,
+parser.add_argument('--plateau_patience', default=4, type=int,
                     help='Number of epochs before reducing learning rate')
 parser.add_argument('--max_num_epochs', default=10000, type=int,
                     help='Maximum number of epochs before finishing')
 parser.add_argument('--loss', default='categorical_crossentropy', type=str,
                     help='Classification loss')
-parser.add_argument('--kernels_per_block', nargs='+',
+parser.add_argument('--stem_kernels', nargs='+', default=[32, 64], type=int,
+                    help='Kernels used in the stem block e.g. 32, 64')
+parser.add_argument('--block_data', nargs='+',
                     default=[128, 128, 256, 256, 512, 512, 1024], type=int,
-                    help='Kernels used in each block e.g. 128 256 512')
+                    help='If model is `vgg` or `xception` list should \
+                    contain the  number of kernels per block. If `densenet` \
+                    list contains the number of dense blocks per \
+                    transition block')
 parser.add_argument('--class_weight', nargs='+', type=int,
                     default=[1.0, 1.3, 2.8, 2.9, 4.1, 53.5, 15.8, 62.2],
                     help='Kernels used in each block e.g. 128 256 512')
@@ -75,12 +81,14 @@ model_builder = {
 optimizer = Nadam(args.learning_rate)
 num_classes = data_manager[0].num_classes
 model_builder = model_builder[args.model_name]
-model = model_builder(input_shape, num_classes, args.kernels_per_block)
+model_inputs = (input_shape, num_classes, args.stem_kernels, args.block_data)
+model = model_builder(*model_inputs)
 model.compile(optimizer, args.loss, metrics=['accuracy'])
 model.summary()
 
-# setting callbacks
-model_path = os.path.join(SAVE_PATH, model.name)
+# setting callbacks and saving hyper-parameters
+date = datetime.now().strftime('_%d-%m-%Y_%H:%M:%S')
+model_path = os.path.join(SAVE_PATH, model.name + date)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
 logger = CSVLogger(os.path.join(model_path, model.name + '_optimization.log'))
@@ -89,8 +97,10 @@ checkpoint = ModelCheckpoint(save_path, verbose=1, save_weights_only=True)
 early_stop = EarlyStopping(patience=args.stop_patience)
 reduce_lr = ReduceLROnPlateau(patience=args.plateau_patience, verbose=1)
 callbacks = [checkpoint, logger, early_stop, reduce_lr]
-with open(os.path.join(model_path, 'hyperparameters.json'), 'w') as write_file:
-    json.dump(args.__dict__, write_file, indent=4)
+with open(os.path.join(model_path, 'hyperparameters.json'), 'w') as filer:
+    json.dump(args.__dict__, filer, indent=4)
+with open(os.path.join(model_path, 'model_summary.txt'), 'w') as filer:
+    model.summary(print_fn=lambda x: filer.write(x + '\n'))
 
 # training model
 model.fit_generator(
