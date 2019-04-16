@@ -92,8 +92,7 @@ save_path = os.path.join(args.save_path, args.dataset, model.name + date)
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 logger = CSVLogger(os.path.join(save_path, model.name + '_optimization.log'))
-weights_name = 'weights.{epoch:02d}-{val_loss:.2f}.hdf5'
-weights_path = os.path.join(save_path, weights_name)
+weights_path = os.path.join(save_path, '_'.join(model.name, 'weights.hdf5'))
 checkpoint = ModelCheckpoint(weights_path, verbose=1, save_weights_only=True)
 early_stop = EarlyStopping(patience=args.stop_patience)
 reduce_lr = ReduceLROnPlateau(patience=args.plateau_patience, verbose=1)
@@ -116,6 +115,7 @@ model.fit_generator(
     workers=4)
 
 # writing evaluations
+model.load_weights(weights_path)
 evaluations = model.evaluate(test_data[0], test_data[1])
 with open(os.path.join(save_path, 'evaluation.txt'), 'w') as filer:
     for evaluation in evaluations:
