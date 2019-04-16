@@ -4,7 +4,6 @@ import cv2
 
 IMAGES_PATH = '../datasets/fer2013/fer2013.csv'
 LABELS_PATH = '../datasets/fer2013new.csv'
-SAVE_PATH = '../trained_models/emotion_models/'
 
 
 class FERPlus(object):

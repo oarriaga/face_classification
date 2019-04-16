@@ -13,7 +13,6 @@ from keras.optimizers import Nadam
 from keras.preprocessing.image import ImageDataGenerator
 
 from datasets import FERPlus
-from datasets import SAVE_PATH
 from models import build_xception, build_densenet, build_vgg
 
 
@@ -50,6 +49,8 @@ parser.add_argument('--class_weight', nargs='+', type=int,
 parser.add_argument('--model_name', default='xception',
                     choices=['xception', 'densenet', 'vgg'], type=str,
                     help='CNN model structure')
+parser.add_argument('--save_path', default='../trained_models/', type=str,
+                    help='Path for writing model weights and logs')
 args = parser.parse_args()
 
 if args.dataset == 'FERPlus':
@@ -88,18 +89,19 @@ model.summary()
 
 # setting callbacks and saving hyper-parameters
 date = datetime.now().strftime('_%d-%m-%Y_%H:%M:%S')
-model_path = os.path.join(SAVE_PATH, model.name + date)
-if not os.path.exists(model_path):
-    os.makedirs(model_path)
-logger = CSVLogger(os.path.join(model_path, model.name + '_optimization.log'))
-save_path = os.path.join(model_path, 'weights.{epoch:02d}-{val_loss:.2f}.hdf5')
-checkpoint = ModelCheckpoint(save_path, verbose=1, save_weights_only=True)
+save_path = os.path.join(args.save_path, args.dataset, model.name + date)
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+logger = CSVLogger(os.path.join(save_path, model.name + '_optimization.log'))
+weights_name = 'weights.{epoch:02d}-{val_loss:.2f}.hdf5'
+weights_path = os.path.join(save_path, weights_name)
+checkpoint = ModelCheckpoint(weights_path, verbose=1, save_weights_only=True)
 early_stop = EarlyStopping(patience=args.stop_patience)
 reduce_lr = ReduceLROnPlateau(patience=args.plateau_patience, verbose=1)
 callbacks = [checkpoint, logger, early_stop, reduce_lr]
-with open(os.path.join(model_path, 'hyperparameters.json'), 'w') as filer:
+with open(os.path.join(save_path, 'hyperparameters.json'), 'w') as filer:
     json.dump(args.__dict__, filer, indent=4)
-with open(os.path.join(model_path, 'model_summary.txt'), 'w') as filer:
+with open(os.path.join(save_path, 'model_summary.txt'), 'w') as filer:
     model.summary(print_fn=lambda x: filer.write(x + '\n'))
 
 # training model
