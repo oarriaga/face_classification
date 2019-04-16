@@ -24,6 +24,10 @@ def build_vgg(input_shape, num_classes, stem_kernels, block_kernels):
     x = BatchNormalization()(x)
     x = GlobalAveragePooling2D()(x)
     output = Activation('softmax', name='predictions')(x)
-    model_name = ''.join(['VGG', str(len(block_kernels))])
+    model_name = '-'.join(['VGG',
+                           str(input_shape[0]),
+                           str(stem_kernels[0]),
+                           str(len(block_kernels))
+                           ])
     model = Model(inputs, output, name=model_name)
     return model

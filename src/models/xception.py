@@ -26,6 +26,10 @@ def build_xception(input_shape, num_classes, stem_kernels,
     x = GlobalAveragePooling2D()(x)
     output = Activation('softmax', name='predictions')(x)
 
-    model_name = ''.join(['Xception', str(len(block_kernels))])
+    model_name = '-'.join(['XCEPTION',
+                           str(input_shape[0]),
+                           str(stem_kernels[0]),
+                           str(len(block_kernels))
+                           ])
     model = Model(inputs, output, name=model_name)
     return model

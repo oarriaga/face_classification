@@ -43,4 +43,11 @@ def build_densenet(input_shape, num_classes, stem_kernels,
 
     x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
     x = layers.Dense(num_classes, activation='softmax', name='fc1000')(x)
-    return models.Model(inputs, x, name='DenseNet')
+
+    model_name = '-'.join(['DENSENET',
+                           str(input_shape[0]),
+                           str(stem_kernels[0]),
+                           str(len(blocks))
+                           ])
+
+    return models.Model(inputs, x, name=model_name)
