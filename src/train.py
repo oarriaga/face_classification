@@ -12,15 +12,15 @@ from keras.callbacks import ReduceLROnPlateau
 from keras.optimizers import Nadam
 from keras.preprocessing.image import ImageDataGenerator
 
-from datasets import FERPlus
+from datasets import FERPlus, FER
 from models import build_xception, build_densenet, build_vgg
 
 
 description = 'Training real-time CNNs for emotion and sex classification'
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('-d', '--dataset', default='FERPlus',
-                    choices=['FERPlus', 'IMDB'], type=str,
-                    help='FERPlus or IMDB')
+                    choices=['FERPlus', 'FER', 'IMDB'], type=str,
+                    help='``FERPlus``, ``FER`` or ``IMDB``')
 parser.add_argument('-bs', '--batch_size', default=32, type=int,
                     help='Batch size for training')
 parser.add_argument('-lr', '--learning_rate', default=0.002, type=float,
@@ -55,6 +55,8 @@ args = parser.parse_args()
 
 if args.dataset == 'FERPlus':
     DataManager = FERPlus
+elif args.dataset == 'FER':
+    DataManager = FER
 else:
     raise NotImplementedError('IMDB dataset not implemented')
 
