@@ -21,7 +21,7 @@ def build_vgg(input_shape, num_classes, stem_kernels, block_kernels):
         x = MaxPool2D(2)(x)
 
     x = Conv2D(num_classes, 3, padding='same')(x)
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = GlobalAveragePooling2D()(x)
     output = Activation('softmax', name='predictions')(x)
     model_name = '-'.join(['VGG',
