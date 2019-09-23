@@ -10,7 +10,7 @@ detector_path = '../trained_models/detection_models/haarcascade_frontalface_defa
 classifier_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
 
 # hyper-parameters for bounding boxes shape
-image_size, offsets, class_names = (640, 480), (20, 40), get_labels('FERPlus')
+image_size, offsets, class_names = (640, 480), (20, 40), get_labels('FER2013')
 
 # loading models
 classifier = load_model(classifier_path, compile=False)
