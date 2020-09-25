@@ -1,5 +1,5 @@
 keras==2.0.5
-tensorflow==1.1.0
+tensorflow==1.15.4
 pandas==0.19.1
 numpy==1.12.1
 h5py==2.7.0
