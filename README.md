@@ -1,3 +1,6 @@
+# This repository is deprecated for at TF-2.0 rewrite visit:
+# https://github.com/oarriaga/paz
+------------------------------------------------
 # Face classification and detection.
 Real-time face detection and emotion/gender classification using fer2013/IMDB datasets with a keras CNN model and openCV.
 * IMDB gender classification test accuracy: 96%.
