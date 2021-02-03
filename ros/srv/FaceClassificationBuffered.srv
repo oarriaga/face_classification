@@ -1,0 +1,5 @@
+#request field
+uint32 buffer_size
+---
+#response field
+bool result

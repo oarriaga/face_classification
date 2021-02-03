@@ -71,3 +71,6 @@ With a few steps one can get its own face classification and detection running. 
 * Run the train_gender_classification.py file
 > python3 train_gender_classifier.py
 
+## ROS USAGE
+
+* In order to use this as a ROS package, consult [this](ros/doc/README.md).
