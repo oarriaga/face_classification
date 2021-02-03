@@ -1,19 +1,14 @@
 import sys
 
 import cv2
-from keras.models import load_model
 import numpy as np
-
-from utils.datasets import get_labels
-from utils.inference import detect_faces
-from utils.inference import draw_text
-from utils.inference import draw_bounding_box
-from utils.inference import apply_offsets
-from utils.inference import load_detection_model
-from utils.inference import load_image
-from utils.preprocessor import preprocess_input
+from keras.models import load_model
 
 # parameters for loading data and images
+from utils.datasets import get_labels
+from utils.inference import load_detection_model, load_image, detect_faces, apply_offsets, draw_bounding_box, draw_text
+from utils.preprocessor import preprocess_input
+
 image_path = sys.argv[1]
 detection_model_path = '../trained_models/detection_models/haarcascade_frontalface_default.xml'
 emotion_model_path = '../trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
@@ -52,8 +47,8 @@ for face_coordinates in faces:
     gray_face = gray_image[y1:y2, x1:x2]
 
     try:
-        rgb_face = cv2.resize(rgb_face, (gender_target_size))
-        gray_face = cv2.resize(gray_face, (emotion_target_size))
+        rgb_face = cv2.resize(rgb_face, gender_target_size)
+        gray_face = cv2.resize(gray_face, emotion_target_size)
     except:
         continue
 

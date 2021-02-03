@@ -8,9 +8,9 @@ Description: Train gender classification model
 
 from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau
-from utils.datasets import DataManager
 from models.cnn import mini_XCEPTION
 from utils.data_augmentation import ImageGenerator
+from utils.datasets import DataManager
 from utils.datasets import split_imdb_data
 
 # parameters
@@ -52,7 +52,7 @@ model.summary()
 # model callbacks
 early_stop = EarlyStopping('val_loss', patience=patience)
 reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1,
-                              patience=int(patience/2), verbose=1)
+                              patience=int(patience / 2), verbose=1)
 csv_logger = CSVLogger(log_file_path, append=False)
 model_names = trained_models_path + '.{epoch:02d}-{val_acc:.2f}.hdf5'
 model_checkpoint = ModelCheckpoint(model_names,

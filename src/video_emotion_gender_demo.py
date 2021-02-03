@@ -1,15 +1,11 @@
 from statistics import mode
 
 import cv2
-from keras.models import load_model
 import numpy as np
+from keras.models import load_model
 
 from utils.datasets import get_labels
-from utils.inference import detect_faces
-from utils.inference import draw_text
-from utils.inference import draw_bounding_box
-from utils.inference import apply_offsets
-from utils.inference import load_detection_model
+from utils.inference import load_detection_model, detect_faces, apply_offsets, draw_bounding_box, draw_text
 from utils.preprocessor import preprocess_input
 
 # parameters for loading data and images
@@ -56,8 +52,8 @@ while True:
         x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
         gray_face = gray_image[y1:y2, x1:x2]
         try:
-            rgb_face = cv2.resize(rgb_face, (gender_target_size))
-            gray_face = cv2.resize(gray_face, (emotion_target_size))
+            rgb_face = cv2.resize(rgb_face, gender_target_size)
+            gray_face = cv2.resize(gray_face, emotion_target_size)
         except:
             continue
         gray_face = preprocess_input(gray_face, False)

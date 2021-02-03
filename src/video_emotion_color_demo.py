@@ -1,15 +1,11 @@
 from statistics import mode
 
 import cv2
-from keras.models import load_model
 import numpy as np
+from keras.models import load_model
 
 from utils.datasets import get_labels
-from utils.inference import detect_faces
-from utils.inference import draw_text
-from utils.inference import draw_bounding_box
-from utils.inference import apply_offsets
-from utils.inference import load_detection_model
+from utils.inference import load_detection_model, detect_faces, apply_offsets, draw_bounding_box, draw_text
 from utils.preprocessor import preprocess_input
 
 # parameters for loading data and images

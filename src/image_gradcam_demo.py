@@ -4,19 +4,11 @@ import cv2
 import numpy as np
 from keras.models import load_model
 
-from utils.grad_cam import compile_gradient_function
-from utils.grad_cam import compile_saliency_function
-from utils.grad_cam import register_gradient
-from utils.grad_cam import modify_backprop
-from utils.grad_cam import calculate_guided_gradient_CAM
 from utils.datasets import get_labels
-from utils.inference import detect_faces
-from utils.inference import apply_offsets
-from utils.inference import load_detection_model
+from utils.grad_cam import (compile_gradient_function, register_gradient, modify_backprop, compile_saliency_function,
+                            calculate_guided_gradient_CAM)
+from utils.inference import load_detection_model, load_image, detect_faces, apply_offsets, draw_bounding_box
 from utils.preprocessor import preprocess_input
-from utils.inference import draw_bounding_box
-from utils.inference import load_image
-
 
 # parameters
 image_path = sys.argv[1]
@@ -58,7 +50,7 @@ for face_coordinates in faces:
 
     # processing input
     try:
-        gray_face = cv2.resize(gray_face, (target_size))
+        gray_face = cv2.resize(gray_face, target_size)
     except:
         continue
     gray_face = preprocess_input(gray_face, True)
@@ -70,14 +62,14 @@ for face_coordinates in faces:
     label_text = labels[predicted_class]
 
     gradient_function = compile_gradient_function(model,
-                            predicted_class, 'conv2d_7')
+                                                  predicted_class, 'conv2d_7')
     register_gradient()
     guided_model = modify_backprop(model, 'GuidedBackProp', task)
     saliency_function = compile_saliency_function(guided_model, 'conv2d_7')
 
     guided_gradCAM = calculate_guided_gradient_CAM(gray_face,
-                        gradient_function, saliency_function)
-    guided_gradCAM = cv2.resize(guided_gradCAM, (x2-x1, y2-y1))
+                                                   gradient_function, saliency_function)
+    guided_gradCAM = cv2.resize(guided_gradCAM, (x2 - x1, y2 - y1))
     rgb_guided_gradCAM = np.repeat(guided_gradCAM[:, :, np.newaxis], 3, axis=2)
     rgb_image[y1:y2, x1:x2, :] = rgb_guided_gradCAM
     draw_bounding_box((x1, y1, x2 - x1, y2 - y1), rgb_image, color)
