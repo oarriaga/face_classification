@@ -11,6 +11,7 @@ def preprocess_input(x, v2=True):
     return x
 
 
+
 def _imread(image_name):
         return imread(image_name)
 
