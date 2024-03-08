@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.misc import imread, imresize
+from imageio import imread
+from skimage.transform import resize
 
 
 def preprocess_input(x, v2=True):
@@ -9,6 +10,7 @@ def preprocess_input(x, v2=True):
         x = x - 0.5
         x = x * 2.0
     return x
+
 
 
 def _imread(image_name):
